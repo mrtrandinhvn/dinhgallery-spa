@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import React, { FormEvent, useRef, useState } from 'react';
 import { deleteAsync, uploadAsync } from '../apis/gallery-apis';
 import GalleryList from '../components/GalleryList';
