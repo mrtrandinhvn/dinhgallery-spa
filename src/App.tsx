@@ -19,6 +19,7 @@ import SignInSignoutButton from './components/SignInSignoutButton';
 import { useAccount, useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { tokenRequest } from './authConfig';
 import WelcomeName from './components/WelcomeName';
+const { REACT_APP_REPOSITORY_URL = '#' } = process.env;
 
 const drawerWidth = 240;
 interface RouteConfig {
@@ -85,6 +86,10 @@ export default function App() {
                         primary={route.label}
                         icon={<route.icon />} />
                 ))}
+                <ListItemLink
+                    to={REACT_APP_REPOSITORY_URL}
+                    primary={'Github'}
+                    icon={<GitHub />} />
             </List>
         </Box>
     );
@@ -132,7 +137,7 @@ export default function App() {
                                 startIcon={<GitHub />}
                                 component={'a'}
                                 sx={{ color: '#fff' }}
-                                href={'https://github.com'}>
+                                href={REACT_APP_REPOSITORY_URL}>
                                 Github
                             </Button>
                         </Box>
