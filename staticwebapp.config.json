@@ -1,4 +1,10 @@
 {
-    "route": "/calendar*",
-    "rewrite": "/calendar.html"
+    "navigationFallback": {
+        "rewrite": "/index.html",
+        "exclude": [
+            "*.{png,jpg,gif,jpeg,mov,mp4,m4a}",
+            "/static/*",
+            "robot.txt"
+        ]
+    }
 }
