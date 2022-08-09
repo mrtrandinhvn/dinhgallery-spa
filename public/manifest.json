@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Dinh Gallery",
+  "name": "Dinh Gallery SPA app using react + .net 6 webapi",
   "icons": [
     {
       "src": "favicon.ico",
