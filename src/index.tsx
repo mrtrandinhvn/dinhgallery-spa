@@ -4,13 +4,13 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { CssBaseline } from '@mui/material';
+import { CssBaseline, Typography } from '@mui/material';
 
 import NotFoundPage from './pages/NotFoundPage';
 import GalleryPage from './pages/GalleryPage';
 import UploadPage from './pages/UploadPage';
 import MediaDetailsPage from './pages/MediaDetailsPage';
-import { AuthenticatedTemplate, MsalProvider } from '@azure/msal-react';
+import { AuthenticatedTemplate, MsalProvider, useIsAuthenticated } from '@azure/msal-react';
 import { msalInstance } from './authConfig';
 import { AccountInfo, EventType } from '@azure/msal-browser';
 
@@ -35,6 +35,14 @@ msalInstance.addEventCallback((event) => {
     }
 });
 
+const NeedSignInMessage = () => {
+    const isAuthenticated = useIsAuthenticated();
+    if (isAuthenticated) {
+        return null;
+    }
+
+    return <Typography variant='h6'>You need to sign in to use this page.</Typography>;
+};
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
@@ -45,8 +53,18 @@ root.render(
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<App />} >
-                            <Route index element={<AuthenticatedTemplate><GalleryPage /></AuthenticatedTemplate>} />
-                            <Route path='upload' element={<AuthenticatedTemplate><UploadPage /></AuthenticatedTemplate>} />
+                            <Route index element={
+                                <>
+                                    <NeedSignInMessage />
+                                    <AuthenticatedTemplate><GalleryPage /></AuthenticatedTemplate>
+                                </>
+                            } />
+                            <Route path='upload' element={
+                                <>
+                                    <NeedSignInMessage />
+                                    <AuthenticatedTemplate><UploadPage /></AuthenticatedTemplate>
+                                </>
+                            } />
                             <Route path='details/:fileName' element={<MediaDetailsPage />} />
 
                             <Route path="*" element={<NotFoundPage />} />

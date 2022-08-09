@@ -23,7 +23,7 @@ function GalleryItem({ url, deleteItem }: IProps) {
 
     const imageExtensions = ['JPG', 'JPEG', 'PNG'];
     const isImage = imageExtensions.indexOf(fileExtension) >= 0;
-    const detailsPage = `/details/${fileName}`;
+    const detailsPage = isImage ? url : `/details/${fileName}`;
     const displayedFileName = decodeURI(fileName);
 
     const onCopyToClipboardClick = () => {

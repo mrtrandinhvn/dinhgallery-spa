@@ -164,7 +164,6 @@ export default function App() {
                 </Box>
                 <Box component="main" sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
                     <Toolbar />
-                    {!isAuthenticated && <Typography variant='h6'>You need to sign in to use this app.</Typography>}
                     <Outlet />
                 </Box>
             </Box>
