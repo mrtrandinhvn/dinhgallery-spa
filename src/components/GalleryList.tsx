@@ -16,7 +16,7 @@ function GalleryList({ urls, deleteItemHandle }: IProps) {
 
     return (
         <ImageList
-            sx={{ width: '100%', height: '100%', margin: 0, flex: '1 1' }}
+            sx={{ width: '100%', margin: 0, flex: '1 1', overflowY: 'initial' }}
             variant={isMobile ? 'standard' : 'woven'}
             cols={isMobile ? 1 : 3}
             gap={8}>

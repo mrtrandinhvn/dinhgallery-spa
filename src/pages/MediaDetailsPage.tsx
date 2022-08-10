@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { DeleteForever } from '@mui/icons-material';
-import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
+import React, { CSSProperties, useEffect, useState } from 'react';
+import { ContentCopy, DeleteForever, Done } from '@mui/icons-material';
+import { Button, Grid, Zoom } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { deleteAsync, getDetailsAsync } from '../apis/gallery-apis';
 import LoadingDiv from '../components/LoadingDiv';
 import PageBody from '../components/PageBody';
+import PageHeading from '../components/PageHeading';
+import { AuthenticatedTemplate } from '@azure/msal-react';
+import { Box } from '@mui/system';
+
+const mediaStyle: CSSProperties = {
+    maxHeight: '100%',
+    maxWidth: '100%',
+};
 
 function MediaDetailsPage() {
     const [publicUrl, setPublicUrl] = useState('');
     const [loading, setLoading] = useState(true);
+    const [copied, setCopied] = useState(false);
     const navigate = useNavigate();
 
     const { fileName } = useParams();
@@ -27,16 +36,25 @@ function MediaDetailsPage() {
             setLoading(true);
             const { data } = await getDetailsAsync(fileName);
             setPublicUrl(data);
-            console.log(data);
             setLoading(false);
         };
 
         fetchDataAsync();
     }, [fileName]);
 
+    const onCopyToClipboardClick = () => {
+        if (copied) {
+            return;
+        }
 
-    const onCardClick = () => {
-        console.log('click');
+        const a = document.createElement('a');
+        a.href = window.location.href;
+        navigator.clipboard.writeText(a.href).then(() => {
+            setCopied(true);
+
+            // reset copied status
+            setTimeout(() => { setCopied(false); }, 5000);
+        });
     };
 
     const onDeleteClick = async () => {
@@ -52,46 +70,57 @@ function MediaDetailsPage() {
 
     const imageExtensions = ['JPG', 'JPEG', 'PNG'];
     const isImage = imageExtensions.indexOf(fileExtension) >= 0;
+
     const previewEl = isImage ?
-        (<CardMedia
-            component='img'
-            height="140"
+        (<img
             src={publicUrl}
             alt={fileName}
             loading='lazy'
+            style={mediaStyle}
         />)
         :
-        (<CardMedia
-            component='video'
-            height="140"
+        (<video
             src={publicUrl}
             controls
             preload='auto'
+            style={mediaStyle}
         />);
     return (
-        <PageBody>
-            <Typography component='h2' variant='h2'>{fileName}</Typography>
-            <div className='pageBody'>
-                <Card sx={{ maxWidth: 345 }}>
-                    <CardActionArea onClick={onCardClick}>
-                        {previewEl}
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                Lizard
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                Lizards are a widespread group of squamate reptiles, with over 6,000
-                                species, ranging across all continents except Antarctica
-                            </Typography>
-                        </CardContent>
-                    </CardActionArea>
-                    <CardActions>
-                        <Button size="small" color="error" startIcon={<DeleteForever />} onClick={onDeleteClick}>
-                            Delete
-                        </Button>
-                    </CardActions>
-                </Card>
-            </div>
+        <PageBody style={{ textAlign: 'center' }}>
+            <PageHeading heading={fileName} />
+            <Box sx={{ flex: '1 1', overflow: 'hidden', marginBottom: '0.5rem' }}>
+                {previewEl}
+            </Box>
+            <Grid xs={12}>
+                <Button
+                    size="medium"
+                    color={copied ? 'success' : 'primary'}
+                    variant='outlined'
+                    startIcon={
+                        <>
+                            <Zoom in={copied} style={{ position: 'absolute' }}>
+                                <Done color='success' />
+                            </Zoom>
+                            <Zoom in={!copied}>
+                                <ContentCopy color='primary' />
+                            </Zoom>
+                        </>}
+                    onClick={onCopyToClipboardClick}
+                    sx={{ marginRight: '.5rem' }}
+                >
+                    {copied ? 'Copied' : 'Click to copy'}
+                </Button>
+                <AuthenticatedTemplate>
+                    <Button
+                        size="medium"
+                        color="error"
+                        variant='outlined'
+                        startIcon={<DeleteForever />}
+                        onClick={onDeleteClick}>
+                        Delete
+                    </Button>
+                </AuthenticatedTemplate>
+            </Grid>
         </PageBody>
     );
 }

@@ -1,22 +1,13 @@
-import { useEffect, useState } from 'react';
-import { useMsal } from '@azure/msal-react';
 import { Typography } from '@mui/material';
 
 interface IWelcomeNameProps {
     sx?: any,
+    name?: string
 }
 
-const WelcomeName = ({ sx }: IWelcomeNameProps) => {
-    const { instance } = useMsal();
-    const [name, setName] = useState<string | null>(null);
-
-    const activeAccount = instance.getActiveAccount();
-    useEffect(() => {
-        setName(activeAccount?.name || null);
-    }, [activeAccount]);
-
+const WelcomeName = ({ sx, name }: IWelcomeNameProps) => {
     if (name) {
-        return <Typography variant="h6" sx={sx}>Welcome, {name}</Typography>;
+        return <Typography sx={sx}>{name}</Typography>;
     } else {
         return null;
     }

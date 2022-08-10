@@ -1,13 +1,21 @@
 import { Box } from '@mui/material';
-import React, { ReactNode } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 
 interface IPageBody {
     children: ReactNode,
+    style?: CSSProperties,
 }
 
-const PageBody = ({ children }: IPageBody) => {
+const PageBody = ({ children, style }: IPageBody) => {
     return (
-        <Box sx={{ display: 'flex', flex: '1 1', flexDirection: 'column', overflow: 'auto', paddingBottom: '1.5rem' }}>
+        <Box sx={{
+            display: 'flex',
+            flex: '1 1',
+            flexDirection: 'column',
+            height: '100%',
+            overflow: 'auto',
+            padding: '0.8rem',
+        }} style={style}>
             {children}
         </Box>
     );

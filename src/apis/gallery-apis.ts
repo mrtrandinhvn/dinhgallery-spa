@@ -21,7 +21,6 @@ const uploadAsync = async (files: FileList, axiosRequestConfig?: AxiosRequestCon
         response = await axios.postForm(`${REACT_APP_GALLERY_ENDPOINT}/gallery`, {
             'files[]': files,
         }, await buildRequestConfigWithAuthorization(axiosRequestConfig));
-        console.log(response.data);
     } catch (error: any) {
         messages = handleError(error);
     }
@@ -37,7 +36,6 @@ const deleteAsync = async (fileName: string, axiosRequestConfig?: AxiosRequestCo
     let response = null, messages = ['Upload completed.'];
     try {
         response = await axios.delete(`${REACT_APP_GALLERY_ENDPOINT}/gallery/${fileName}`, await buildRequestConfigWithAuthorization(axiosRequestConfig));
-        console.log(response.data);
     } catch (error: any) {
         messages = handleError(error);
     }
@@ -98,6 +96,5 @@ function handleError(error: any): string[] {
 
     }
 
-    console.log(error);
     return ['Some errors occurred with the api.', error.toString()];
 }

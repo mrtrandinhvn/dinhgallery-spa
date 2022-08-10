@@ -4,20 +4,18 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { CssBaseline, Typography } from '@mui/material';
+import { Box, CssBaseline, Typography } from '@mui/material';
 
 import NotFoundPage from './pages/NotFoundPage';
 import GalleryPage from './pages/GalleryPage';
 import UploadPage from './pages/UploadPage';
 import MediaDetailsPage from './pages/MediaDetailsPage';
-import { AuthenticatedTemplate, MsalProvider, useIsAuthenticated } from '@azure/msal-react';
+import { AuthenticatedTemplate, MsalProvider, UnauthenticatedTemplate } from '@azure/msal-react';
 import { msalInstance } from './authConfig';
 import { AccountInfo, EventType } from '@azure/msal-browser';
 
 // Default to using the first account if no account is active on page load
 
-console.log(msalInstance.getActiveAccount());
-console.log(msalInstance.getAllAccounts());
 if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
     // Account selection logic is app dependent. Adjust as needed for different use cases.
     console.log('Set active account on page load');
@@ -36,12 +34,13 @@ msalInstance.addEventCallback((event) => {
 });
 
 const NeedSignInMessage = () => {
-    const isAuthenticated = useIsAuthenticated();
-    if (isAuthenticated) {
-        return null;
-    }
-
-    return <Typography variant='h6'>You need to sign in to use this page.</Typography>;
+    return (
+        <UnauthenticatedTemplate>
+            <Box sx={{ marginTop: '1rem' }}>
+                <Typography variant='h6'>You need to sign in to use this page.</Typography>
+            </Box>
+        </UnauthenticatedTemplate>
+    );
 };
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);

@@ -1,9 +1,9 @@
-import { Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { deleteAsync, listAllAsync } from '../apis/gallery-apis';
 import GalleryList from '../components/GalleryList';
 import LoadingDiv from '../components/LoadingDiv';
 import PageBody from '../components/PageBody';
+import PageHeading from '../components/PageHeading';
 
 const GalleryPage = () => {
     const [urls, setUrls] = useState<string[]>([]);
@@ -12,7 +12,6 @@ const GalleryPage = () => {
     const fetchDataAsync = async () => {
         setLoading(true);
         const { data } = await listAllAsync();
-        console.log(data);
         setUrls(data);
         setLoading(false);
     };
@@ -22,7 +21,6 @@ const GalleryPage = () => {
     }, []);
 
     const deleteMediaHandle = async (mediaName: string) => {
-        console.log(`delete media name: '${mediaName}'`);
         await deleteAsync(mediaName);
         await fetchDataAsync();
     };
@@ -33,7 +31,7 @@ const GalleryPage = () => {
 
     return (
         <PageBody>
-            <Typography component='h2' variant='h2'>Gallery</Typography>
+            <PageHeading heading='Gallery' />
             <GalleryList urls={urls} deleteItemHandle={deleteMediaHandle} />
         </PageBody>
     );

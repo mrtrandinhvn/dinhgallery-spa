@@ -1,8 +1,8 @@
-import { Typography } from '@mui/material';
 import React, { FormEvent, useRef, useState } from 'react';
 import { deleteAsync, uploadAsync } from '../apis/gallery-apis';
 import GalleryList from '../components/GalleryList';
 import PageBody from '../components/PageBody';
+import PageHeading from '../components/PageHeading';
 
 function UploadPage() {
     const [messages, setMessages] = useState<string[]>([]);
@@ -36,7 +36,6 @@ function UploadPage() {
                 // Do whatever you want with the native progress event
                 setMessages([...messages, 'uploading...']);
                 if (lengthComputable) {
-                    console.log(`${loaded}/${total}`);
                     setMessages([`uploading... ${Number(loaded * 100 / total).toFixed(2)}%`]);
                 }
             },
@@ -64,7 +63,6 @@ function UploadPage() {
     };
 
     const deleteMediaHandle = async (mediaName: string) => {
-        console.log(`delete media name: '${mediaName}'`);
         await deleteAsync(mediaName);
         setSavedFiles(savedFiles.filter(url => url.split('/').pop() !== mediaName));
     };
@@ -74,8 +72,7 @@ function UploadPage() {
 
     return (
         <PageBody>
-            <Typography component='h2' variant='h2'>Upload to gallery</Typography>
-
+            <PageHeading heading='Upload to gallery' />
             <form id='videoUploadForm' ref={formRef} className="row g-3" onSubmit={onSubmit}>
                 <div className="mb-3">
                     <label htmlFor="formFile" className="form-label">Select a video</label>
