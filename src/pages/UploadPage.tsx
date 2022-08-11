@@ -65,8 +65,12 @@ function UploadPage() {
     };
 
     const deleteMediaHandle = async (mediaName: string) => {
-        await deleteAsync(mediaName);
-        setSavedFiles(savedFiles.filter(url => url.split('/').pop() !== mediaName));
+        const { success, messages } = await deleteAsync(mediaName);
+        if (success) {
+            setSavedFiles(savedFiles.filter(url => url.split('/').pop() !== mediaName));
+        } else {
+            alert(messages);
+        }
     };
 
     const hasFiles = !!files && files.length > 0;

@@ -21,8 +21,12 @@ const GalleryPage = () => {
     }, []);
 
     const deleteMediaHandle = async (mediaName: string) => {
-        await deleteAsync(mediaName);
-        await fetchDataAsync();
+        const { success, messages } = await deleteAsync(mediaName);
+        if (success) {
+            setUrls(urls.filter(url => url.split('/').pop() !== mediaName));
+        } else {
+            alert(messages);
+        }
     };
 
     if (loading) {
