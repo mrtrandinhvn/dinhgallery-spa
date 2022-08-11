@@ -1,13 +1,12 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { ContentCopy, DeleteForever, Done } from '@mui/icons-material';
-import { Button, Grid, Zoom } from '@mui/material';
+import { Box, Button, Zoom } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { deleteAsync, getDetailsAsync } from '../apis/gallery-apis';
 import LoadingDiv from '../components/LoadingDiv';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 import { AuthenticatedTemplate } from '@azure/msal-react';
-import { Box } from '@mui/system';
 
 const mediaStyle: CSSProperties = {
     maxHeight: '100%',
@@ -80,47 +79,48 @@ function MediaDetailsPage() {
         />)
         :
         (<video
-            src={publicUrl}
             controls
-            preload='auto'
+            preload='metadata'
             style={mediaStyle}
-        />);
+        >
+            <source src={publicUrl} />
+        </video>);
     return (
         <PageBody style={{ textAlign: 'center' }}>
             <PageHeading heading={fileName} />
             <Box sx={{ flex: '1 1', overflow: 'hidden', marginBottom: '0.5rem' }}>
                 {previewEl}
-            </Box>
-            <Grid xs={12}>
-                <Button
-                    size="medium"
-                    color={copied ? 'success' : 'primary'}
-                    variant='outlined'
-                    startIcon={
-                        <>
-                            <Zoom in={copied} style={{ position: 'absolute' }}>
-                                <Done color='success' />
-                            </Zoom>
-                            <Zoom in={!copied}>
-                                <ContentCopy color='primary' />
-                            </Zoom>
-                        </>}
-                    onClick={onCopyToClipboardClick}
-                    sx={{ marginRight: '.5rem' }}
-                >
-                    {copied ? 'Copied' : 'Click to copy'}
-                </Button>
-                <AuthenticatedTemplate>
+                <Box>
                     <Button
                         size="medium"
-                        color="error"
+                        color={copied ? 'success' : 'primary'}
                         variant='outlined'
-                        startIcon={<DeleteForever />}
-                        onClick={onDeleteClick}>
-                        Delete
+                        startIcon={
+                            <>
+                                <Zoom in={copied} style={{ position: 'absolute' }}>
+                                    <Done color='success' />
+                                </Zoom>
+                                <Zoom in={!copied}>
+                                    <ContentCopy color='primary' />
+                                </Zoom>
+                            </>}
+                        onClick={onCopyToClipboardClick}
+                        sx={{ marginRight: '.5rem' }}
+                    >
+                        {copied ? 'Copied' : 'Click to copy'}
                     </Button>
-                </AuthenticatedTemplate>
-            </Grid>
+                    <AuthenticatedTemplate>
+                        <Button
+                            size="medium"
+                            color="error"
+                            variant='outlined'
+                            startIcon={<DeleteForever />}
+                            onClick={onDeleteClick}>
+                            Delete
+                        </Button>
+                    </AuthenticatedTemplate>
+                </Box>
+            </Box>
         </PageBody>
     );
 }

@@ -1,3 +1,5 @@
+import { Clear, Upload } from '@mui/icons-material';
+import { Button, Grid, Typography } from '@mui/material';
 import React, { FormEvent, useRef, useState } from 'react';
 import { deleteAsync, uploadAsync } from '../apis/gallery-apis';
 import GalleryList from '../components/GalleryList';
@@ -71,34 +73,83 @@ function UploadPage() {
     const hasSavedFiles = savedFiles.length > 0;
 
     return (
-        <PageBody>
+        <PageBody
+            style={{ textAlign: 'center' }}
+        >
             <PageHeading heading='Upload to gallery' />
-            <form id='videoUploadForm' ref={formRef} className="row g-3" onSubmit={onSubmit}>
-                <div className="mb-3">
-                    <label htmlFor="formFile" className="form-label">Select a video</label>
-                    <input className="form-control" type="file" id="fileInput" name="files"
-                        accept="video/*, image/png, image/jpeg" onInput={onFieldChange}
-                        multiple disabled={uploading} />
-                </div>
-                <div className="mb-3">
-                    <button type="submit" className={`btn btn-primary mb-3 me-1 ${!hasFiles || uploading ? 'disabled' : ''}`}
-                        disabled={!hasFiles || uploading}>Upload</button>
-                    <button type="button" className={`btn btn-danger mb-3 ${!hasFiles || uploading ? 'disabled' : ''}`} onClick={onClearClick}
-                        disabled={!hasFiles || uploading}>Clear</button>
-                </div>
-                {messages.length > 0 && <pre>{messages}</pre>}
-                {hasFiles ? (
-                    Array.from(files).map(file => (
-                        <pre key={file.name}>
-                            <div>Filename: {file.name}</div>
-                            <div>Filetype: {file.type}</div>
-                            <div>Size in bytes: {file.size.toLocaleString()}</div>
-                        </pre>
-                    ))
-                ) : (
-                    <p>Select a file to show details</p>
-                )}
-            </form >
+            <Grid
+                component={'form'}
+                autoComplete='off'
+                ref={formRef}
+                onSubmit={onSubmit}
+                rowSpacing={2}
+                container
+                sx={{ marginTop: 0 }}
+            >
+                <Grid
+                    xs={12}
+                    item
+                >
+                    <Button
+                        variant="outlined"
+                        component="label"
+                        disabled={uploading}
+                    >
+                        Select files
+                        <input hidden type="file" name="files"
+                            accept="video/*, image/*, audio/*" onInput={onFieldChange}
+                            multiple disabled={uploading} />
+                    </Button>
+                </Grid>
+                <Grid
+                    xs={12}
+                    item
+                >
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        startIcon={<Upload />}
+                        type='submit'
+                        disabled={!hasFiles || uploading}
+                        style={{ marginRight: '0.5rem' }}
+                    >
+                        Upload
+                    </Button>
+
+                    <Button
+                        variant='contained'
+                        color='inherit'
+                        startIcon={<Clear />}
+                        disabled={!hasFiles || uploading}
+                        onClick={onClearClick}
+                    >
+                        Clear
+                    </Button>
+                </Grid>
+
+                <Grid item xs={12}>
+                    {messages.length > 0 && <pre>{messages}</pre>}
+                </Grid>
+
+                <Grid item xs={12} container columns={files?.length === 1 ? 4 : files?.length === 2 ? 8 : files?.length || 0 >= 3 ? 12 : 12}>
+                    {hasFiles && (
+                        <>
+                            <Grid item xs={12}>
+                                <Typography>Selected files details</Typography>
+                            </Grid>
+                            {Array.from(files).map(file => (
+                                <Grid key={file.name} item xs={4}>
+                                    <pre>
+                                        <div>Filename: {file.name}</div>
+                                        <div>Filetype: {file.type}</div>
+                                        <div>Size in bytes: {file.size.toLocaleString()}</div>
+                                    </pre>
+                                </Grid>
+                            ))}
+                        </>
+                    )}
+                </Grid>
+            </Grid>
             <div className='gallery'>
                 {hasSavedFiles && <GalleryList urls={savedFiles} deleteItemHandle={deleteMediaHandle} />}
             </div>
