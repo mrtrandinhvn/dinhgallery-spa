@@ -160,7 +160,7 @@ const MyAppbar = () => {
                         </Button>
                     </AuthenticatedTemplate>
                     <UnauthenticatedTemplate>
-                        <SignInSignoutButton sx={{ marginLeft: 'auto' }} />
+                        <SignInSignoutButton sx={{ marginLeft: 'auto', color: 'inherit' }} />
                     </UnauthenticatedTemplate>
                     <Menu
                         id="menu-appbar"
