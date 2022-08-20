@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { ContentCopy, DeleteForever, Done } from '@mui/icons-material';
+import { ContentCopy, DeleteForever, Done, Share } from '@mui/icons-material';
 import { Box, Button, Zoom } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { deleteAsync, getDetailsAsync } from '../apis/gallery-apis';
@@ -7,9 +7,10 @@ import LoadingDiv from '../components/LoadingDiv';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 import { AuthenticatedTemplate } from '@azure/msal-react';
+import { mobileShareAsync } from '../utils';
 
 const mediaStyle: CSSProperties = {
-    maxHeight: '100%',
+    maxHeight: 'calc(100% - 48px)',
     maxWidth: '100%',
 };
 
@@ -46,9 +47,7 @@ function MediaDetailsPage() {
             return;
         }
 
-        const a = document.createElement('a');
-        a.href = window.location.href;
-        navigator.clipboard.writeText(a.href).then(() => {
+        navigator.clipboard.writeText(window.location.href).then(() => {
             setCopied(true);
 
             // reset copied status
@@ -61,6 +60,10 @@ function MediaDetailsPage() {
             await deleteAsync(fileName);
             navigate('/');
         }
+    };
+
+    const onShareClick = () => {
+        mobileShareAsync({ url: window.location.href });
     };
 
     if (loading) {
@@ -107,7 +110,18 @@ function MediaDetailsPage() {
                         onClick={onCopyToClipboardClick}
                         sx={{ marginRight: '.5rem' }}
                     >
-                        {copied ? 'Copied' : 'Click to copy'}
+                        {copied ? 'Copied' : 'Copy'}
+                    </Button>
+                    <Button
+                        size="medium"
+                        variant='outlined'
+                        startIcon={
+                            <Share color='primary' />
+                        }
+                        onClick={onShareClick}
+                        sx={{ marginRight: '.5rem' }}
+                    >
+                        Share
                     </Button>
                     <AuthenticatedTemplate>
                         <Button
@@ -123,6 +137,7 @@ function MediaDetailsPage() {
             </Box>
         </PageBody>
     );
+
 }
 
 export default MediaDetailsPage;

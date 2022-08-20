@@ -1,5 +1,6 @@
 import { Clear, Upload } from '@mui/icons-material';
-import { Button, Grid, Typography } from '@mui/material';
+import { Button, Grid, Typography, useMediaQuery } from '@mui/material';
+import json2mq from 'json2mq';
 import React, { FormEvent, useRef, useState } from 'react';
 import { deleteAsync, uploadAsync } from '../apis/gallery-apis';
 import GalleryList from '../components/GalleryList';
@@ -11,6 +12,12 @@ function UploadPage() {
     const [files, setFiles] = useState<FileList | null>(null);
     const [uploading, setUploading] = useState(false);
     const [savedFiles, setSavedFiles] = useState<string[]>([]);
+
+    const isMobile = useMediaQuery(
+        json2mq({
+            maxWidth: 599,
+        }),
+    );
 
     const formRef = useRef<HTMLFormElement>(null);
 
@@ -38,7 +45,12 @@ function UploadPage() {
                 // Do whatever you want with the native progress event
                 setMessages([...messages, 'uploading...']);
                 if (lengthComputable) {
-                    setMessages([`uploading... ${Number(loaded * 100 / total).toFixed(2)}%`]);
+                    const mess = [`uploading... ${Number(loaded * 100 / total).toFixed(2)}%`];
+                    if (loaded === total) {
+                        mess.push('Server is saving your media.');
+                    }
+
+                    setMessages(mess);
                 }
             },
         });
@@ -132,10 +144,10 @@ function UploadPage() {
                 </Grid>
 
                 <Grid item xs={12}>
-                    {messages.length > 0 && <pre>{messages}</pre>}
+                    {messages.length > 0 && <pre>{messages.map(x => x + '\r\n')}</pre>}
                 </Grid>
 
-                <Grid item xs={12} container columns={files?.length === 1 ? 4 : files?.length === 2 ? 8 : files?.length || 0 >= 3 ? 12 : 12}>
+                <Grid item xs={12} container columns={isMobile ? 4 : files?.length === 1 ? 4 : files?.length === 2 ? 8 : files?.length || 0 >= 3 ? 12 : 12}>
                     {hasFiles && (
                         <>
                             <Grid item xs={12}>
