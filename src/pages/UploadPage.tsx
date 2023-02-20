@@ -40,7 +40,7 @@ function UploadPage() {
             return;
         }
 
-        const result = await uploadAsync(files, {
+        const result = await uploadAsync(files, null, {
             onUploadProgress: function ({ lengthComputable, loaded, total }) {
                 // Do whatever you want with the native progress event
                 setMessages([...messages, 'uploading...']);

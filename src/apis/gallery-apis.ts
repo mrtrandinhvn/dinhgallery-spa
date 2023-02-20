@@ -15,11 +15,12 @@ const buildRequestConfigWithAuthorization = async (additionalConfig?: AxiosReque
     },
 });
 
-const uploadAsync = async (files: FileList, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<string[]>> => {
+const uploadAsync = async (files: FileList, folderDisplayName: string | null, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<string[]>> => {
     let response = null, messages = ['Upload completed.'];
     try {
         response = await axios.postForm(`${REACT_APP_GALLERY_ENDPOINT}/gallery`, {
             'files[]': files,
+            folderDisplayName,
         }, await buildRequestConfigWithAuthorization(axiosRequestConfig));
     } catch (error: any) {
         messages = handleError(error);
