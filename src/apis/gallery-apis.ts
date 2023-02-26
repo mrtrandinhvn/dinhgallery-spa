@@ -80,11 +80,19 @@ const getDetailsAsync = async (fileName: string, axiosRequestConfig?: AxiosReque
     };
 };
 
-export {
-    uploadAsync,
-    deleteAsync,
-    listAllAsync,
-    getDetailsAsync,
+const getFolderFiles = async (axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<string[]>> => {
+    let response = null, messages = new Array<string>();
+    try {
+        response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery', await buildRequestConfigWithAuthorization(axiosRequestConfig));
+    } catch (error: any) {
+        messages = handleError(error);
+    }
+
+    return {
+        success: !!response,
+        data: (response && response.data) || new Array<string>(),
+        messages,
+    };
 };
 
 function handleError(error: any): string[] {
@@ -99,3 +107,11 @@ function handleError(error: any): string[] {
 
     return ['Some errors occurred with the api.', error.toString()];
 }
+
+export {
+    uploadAsync,
+    deleteAsync,
+    listAllAsync,
+    getDetailsAsync,
+    getFolderFiles,
+};
