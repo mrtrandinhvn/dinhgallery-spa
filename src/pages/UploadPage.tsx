@@ -3,7 +3,7 @@ import { Button, Grid, Typography, useMediaQuery } from '@mui/material';
 import json2mq from 'json2mq';
 import React, { FormEvent, useRef, useState } from 'react';
 import { deleteAsync, uploadAsync } from '../apis/gallery-apis';
-import GalleryList from '../components/GalleryList';
+import GalleryFolder from '../components/GalleryFolder';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 
@@ -167,7 +167,7 @@ function UploadPage() {
                 </Grid>
             </Grid>
             <div className='gallery'>
-                {hasSavedFiles && <GalleryList urls={savedFiles} deleteItemHandle={deleteMediaHandle} />}
+                {/* {hasSavedFiles && <GalleryFolder urls={savedFiles} deleteItemHandle={deleteMediaHandle} />} */}
             </div>
         </PageBody>
     );

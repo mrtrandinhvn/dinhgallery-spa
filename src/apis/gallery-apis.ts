@@ -8,6 +8,19 @@ interface IApiResponse<T> {
     messages: Array<string>,
 }
 
+export interface IFileDetails {
+    id: string,
+    downloadUri: string,
+    displayName: string,
+    createdAtUtc: string
+}
+
+export interface IFolderDetails {
+    createdAtUtc: string,
+    displayName: string,
+    files: Array<IFileDetails>,
+}
+
 const buildRequestConfigWithAuthorization = async (additionalConfig?: AxiosRequestConfig) => ({
     ...additionalConfig,
     headers: {
@@ -80,17 +93,17 @@ const getDetailsAsync = async (fileName: string, axiosRequestConfig?: AxiosReque
     };
 };
 
-const getFolderFiles = async (axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<string[]>> => {
+const getFolderDetailsAsync = async (folderId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<IFolderDetails>> => {
     let response = null, messages = new Array<string>();
     try {
-        response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery', await buildRequestConfigWithAuthorization(axiosRequestConfig));
+        response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery/folder/' + folderId, await buildRequestConfigWithAuthorization(axiosRequestConfig));
     } catch (error: any) {
         messages = handleError(error);
     }
 
     return {
         success: !!response,
-        data: (response && response.data) || new Array<string>(),
+        data: (response && response.data) || null,
         messages,
     };
 };
@@ -113,5 +126,5 @@ export {
     deleteAsync,
     listAllAsync,
     getDetailsAsync,
-    getFolderFiles,
+    getFolderDetailsAsync as getFolderFiles,
 };

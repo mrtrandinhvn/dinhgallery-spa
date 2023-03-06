@@ -1,20 +1,23 @@
 import { ContentCopy, DeleteForeverOutlined, Done, ExitToApp, OpenInNew, Share } from '@mui/icons-material';
 import { Box, IconButton, ImageListItem, ImageListItemBar, Zoom } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { IFileDetails } from '../apis/gallery-apis';
 import { mobileShareAsync } from '../utils';
 
 interface IProps {
-    url: string,
-    deleteItem: (fileName: string) => {},
+    details: IFileDetails,
+    deleteItem: (fileName: string) => void,
 }
 
-function GalleryItem({ url, deleteItem }: IProps) {
+const getAbsoluteUrl = (url: string) => url.startsWith('http') ? url : `${window.location.origin}${url}`;
+
+function GalleryItem({ details, deleteItem }: IProps) {
     const [copied, setCopied] = useState(false);
 
-    const fileName: string | undefined = url.split('/').pop();
+    const fileName: string | undefined = details.downloadUri;
     if (!fileName) {
-        throw new Error(`Invalid url. Could not detect file name in this url: '${url}'`);
+        throw new Error(`Invalid url. Could not detect file name in this url: '${details.downloadUri}'`);
     }
 
     const fileExtension: string | undefined = fileName.split('.')?.pop()?.toUpperCase();
@@ -24,10 +27,9 @@ function GalleryItem({ url, deleteItem }: IProps) {
 
     const imageExtensions = ['JPG', 'JPEG', 'PNG'];
     const isImage = imageExtensions.indexOf(fileExtension) >= 0;
-    const detailsPage = isImage ? url : `/details/${fileName}`;
-    const getAbsoluteUrl = (url: string) => url.startsWith('http') ? url : `${window.location.origin}${url}`;
+    const detailsPage = isImage ? details.downloadUri : `/files/${fileName}`;
 
-    const onCopyToClipboardClick = () => {
+    const onCopyToClipboardClick = useCallback(() => {
         if (copied) {
             return;
         }
@@ -38,11 +40,11 @@ function GalleryItem({ url, deleteItem }: IProps) {
             // reset copied status
             setTimeout(() => { setCopied(false); }, 5000);
         });
-    };
+    }, [copied, detailsPage]);
 
-    const onShareClick = () => {
+    const onShareClick = useCallback(() => {
         mobileShareAsync({ url: getAbsoluteUrl(detailsPage) });
-    };
+    }, [detailsPage]);
 
     const localOnDeleteClick = () => {
         if (window.confirm('Deleted media is lost forever. Are you sure you want to do this?')) {
@@ -52,7 +54,7 @@ function GalleryItem({ url, deleteItem }: IProps) {
 
     const previewEl = imageExtensions.indexOf(fileExtension) >= 0 ?
         <img
-            src={url}
+            src={details.downloadUri}
             alt="Default alt"
             loading='lazy'
             style={{
@@ -61,7 +63,7 @@ function GalleryItem({ url, deleteItem }: IProps) {
         />
         :
         <video
-            src={url}
+            src={details.downloadUri}
             controls
             preload="metadata"
             style={{
@@ -85,7 +87,7 @@ function GalleryItem({ url, deleteItem }: IProps) {
                         {
                             isImage ?
                                 <a
-                                    href={url}
+                                    href={details.downloadUri}
                                     target="_blank"
                                     rel="noreferrer"
                                     title='Open in new tab'>

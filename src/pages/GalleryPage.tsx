@@ -1,42 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { deleteAsync, listAllAsync } from '../apis/gallery-apis';
-import GalleryList from '../components/GalleryList';
+import { listAllAsync } from '../apis/gallery-apis';
+import GalleryFolder from '../components/GalleryFolder';
 import LoadingDiv from '../components/LoadingDiv';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 
 const GalleryPage = () => {
     const [urls, setUrls] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchDataAsync = async () => {
-        setLoading(true);
+        setIsLoading(true);
         const { data } = await listAllAsync();
         setUrls(data);
-        setLoading(false);
+        setIsLoading(false);
     };
 
     useEffect(() => {
         fetchDataAsync();
     }, []);
 
-    const deleteMediaHandle = async (mediaName: string) => {
-        const { success, messages } = await deleteAsync(mediaName);
-        if (success) {
-            setUrls(urls.filter(url => url.split('/').pop() !== mediaName));
-        } else {
-            alert(messages);
-        }
-    };
-
-    if (loading) {
+    if (isLoading) {
         return <LoadingDiv />;
     }
 
     return (
         <PageBody>
             <PageHeading heading='Gallery' />
-            <GalleryList urls={urls} deleteItemHandle={deleteMediaHandle} />
+            <GalleryFolder folderId='af073b5a-1f84-4904-9b63-6735be301e3a' />
         </PageBody>
     );
 };
