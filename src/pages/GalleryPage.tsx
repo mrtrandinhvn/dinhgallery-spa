@@ -1,24 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { listAllAsync } from '../apis/gallery-apis';
+import React, { useCallback, useEffect, useState } from 'react';
+import { getFoldersAsync } from '../apis/gallery-apis';
 import GalleryFolder from '../components/GalleryFolder';
 import LoadingDiv from '../components/LoadingDiv';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 
 const GalleryPage = () => {
-    const [urls, setUrls] = useState<string[]>([]);
+    const [folderIds, setFolderIds] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchDataAsync = async () => {
         setIsLoading(true);
-        const { data } = await listAllAsync();
-        setUrls(data);
+        const { data } = await getFoldersAsync();
+        setFolderIds(data.map(x => x.id));
         setIsLoading(false);
     };
 
     useEffect(() => {
         fetchDataAsync();
     }, []);
+
+    const deleteFolderHandle = useCallback((folderId: string) => {
+        setFolderIds(folderIds.filter(x => x !== folderId));
+    }, [folderIds]);
 
     if (isLoading) {
         return <LoadingDiv />;
@@ -27,7 +31,7 @@ const GalleryPage = () => {
     return (
         <PageBody>
             <PageHeading heading='Gallery' />
-            <GalleryFolder folderId='af073b5a-1f84-4904-9b63-6735be301e3a' />
+            {folderIds.map(folderId => <GalleryFolder key={folderId} folderId={folderId} deleteFolder={deleteFolderHandle} />)}
         </PageBody>
     );
 };

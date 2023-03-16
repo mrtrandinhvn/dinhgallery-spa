@@ -8,7 +8,7 @@ const NotFoundPage = () => {
     return (
         <PageBody>
             <PageHeading heading='404 Not Found' />
-            <Typography>The page you're looking for does not exists.</Typography>
+            <Typography>The page you're looking for does not exist.</Typography>
             <Link to="/">Go to the home page</Link>
         </PageBody>
     );

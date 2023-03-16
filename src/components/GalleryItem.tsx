@@ -1,19 +1,21 @@
-import { ContentCopy, DeleteForeverOutlined, Done, ExitToApp, OpenInNew, Share } from '@mui/icons-material';
-import { Box, IconButton, ImageListItem, ImageListItemBar, Zoom } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import { DeleteForeverOutlined, Download, ExitToApp } from '@mui/icons-material';
+import { Box, IconButton, ImageListItem, ImageListItemBar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { IFileDetails } from '../apis/gallery-apis';
-import { mobileShareAsync } from '../utils';
+import { imageExtensions } from '../constants/file-extensions';
+import { getAbsoluteUrl } from '../utils';
+import CopyIconButton from './CopyIconButton';
+import ShareIconButton from './ShareIconButton';
 
 interface IProps {
     details: IFileDetails,
     deleteItem: (fileName: string) => void,
 }
 
-const getAbsoluteUrl = (url: string) => url.startsWith('http') ? url : `${window.location.origin}${url}`;
-
 function GalleryItem({ details, deleteItem }: IProps) {
-    const [copied, setCopied] = useState(false);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const fileName: string | undefined = details.downloadUri;
     if (!fileName) {
@@ -25,56 +27,32 @@ function GalleryItem({ details, deleteItem }: IProps) {
         throw new Error(`Could not detect file extension in file name: '${fileName}'`);
     }
 
-    const imageExtensions = ['JPG', 'JPEG', 'PNG'];
     const isImage = imageExtensions.indexOf(fileExtension) >= 0;
-    const detailsPage = isImage ? details.downloadUri : `/files/${fileName}`;
+    const detailsPage = isImage ? details.downloadUri : `/file/${details.id}`;
+    const detailsPageAbsoluteUrl = getAbsoluteUrl(detailsPage);
 
-    const onCopyToClipboardClick = useCallback(() => {
-        if (copied) {
-            return;
-        }
-
-        navigator.clipboard.writeText(getAbsoluteUrl(detailsPage)).then(() => {
-            setCopied(true);
-
-            // reset copied status
-            setTimeout(() => { setCopied(false); }, 5000);
-        });
-    }, [copied, detailsPage]);
-
-    const onShareClick = useCallback(() => {
-        mobileShareAsync({ url: getAbsoluteUrl(detailsPage) });
-    }, [detailsPage]);
-
-    const localOnDeleteClick = () => {
+    const localOnDeleteClick = useCallback(() => {
         if (window.confirm('Deleted media is lost forever. Are you sure you want to do this?')) {
-            deleteItem(fileName);
+            deleteItem(details.id);
         }
-    };
+    }, [deleteItem, details.id]);
 
     const previewEl = imageExtensions.indexOf(fileExtension) >= 0 ?
         <img
             src={details.downloadUri}
             alt="Default alt"
             loading='lazy'
-            style={{
-                borderRadius: '0.8rem',
-            }}
         />
         :
         <video
             src={details.downloadUri}
             controls
             preload="metadata"
-            style={{
-                width: '100%',
-                borderRadius: '0.8rem',
-            }}
         />;
     return (
         <ImageListItem
             sx={{
-                borderRadius: '0.8rem',
+                borderRadius: '0.4rem',
                 overflow: 'hidden',
             }}>
             {previewEl}
@@ -83,60 +61,42 @@ function GalleryItem({ details, deleteItem }: IProps) {
                     // background: 'rgba(255, 255, 255, 0.5)',
                 }}
                 title={
+                    <Box>
+                        <Typography variant='h6'>{details.displayName}</Typography>
+                    </Box>
+                }
+                subtitle={
                     <Box style={{ minWidth: '80px', textAlign: 'right' }}>
                         {
                             isImage ?
-                                <a
-                                    href={details.downloadUri}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    title='Open in new tab'>
-                                    <IconButton color='primary'
-                                        sx={{ background: 'rgba(255 255 255 / 70%)', marginRight: '0.3rem' }}
-                                    >
-                                        <OpenInNew />
-                                    </IconButton>
-                                </a>
+                                null
                                 : <Link to={detailsPage} title='Go to details page'>
-                                    <IconButton color='primary'
-                                        sx={{ background: 'rgba(255 255 255 / 70%)', marginRight: '0.3rem' }}
-                                    >
+                                    <IconButton color='primary'>
                                         <ExitToApp />
                                     </IconButton>
                                 </Link>
                         }
-                        <IconButton
-                            title={'Click to share'}
-                            aria-label={'Click to share'}
-                            onClick={onShareClick}
-                            sx={{ background: 'rgba(255 255 255 / 70%)', marginRight: '0.3rem' }}
-                        >
-                            <Share color='primary' />
-                        </IconButton>
-                        <IconButton
-                            title={copied ? 'Copied' : 'Copy to clipboard'}
-                            aria-label={copied ? 'Copied' : 'Copy to clipboard'}
-                            onClick={onCopyToClipboardClick}
-                            sx={{ background: 'rgba(255 255 255 / 70%)', marginRight: '0.3rem' }}
-                        >
-                            <Zoom in={copied} style={{ position: 'absolute' }}>
-                                <Done color='success' />
-                            </Zoom>
-                            <Zoom in={!copied}>
-                                <ContentCopy color='success' />
-                            </Zoom>
-                        </IconButton>
+                        <a
+                            href={details.downloadUri}
+                            target="_blank"
+                            rel="noreferrer"
+                            title='Download'>
+                            <IconButton color='primary'                            >
+                                <Download />
+                            </IconButton>
+                        </a>
+                        <ShareIconButton url={detailsPageAbsoluteUrl} />
+                        <CopyIconButton url={detailsPageAbsoluteUrl} />
                         <IconButton
                             title={'Click to delete'}
                             aria-label={'Click to delete'}
                             onClick={localOnDeleteClick}
-                            sx={{ background: 'rgba(255 255 255 / 70%)' }}
                         >
                             <DeleteForeverOutlined color='error' />
                         </IconButton>
                     </Box>
                 }
-                position='top'
+                position={isMobile ? 'below' : 'top'}
             />
         </ImageListItem>
     );

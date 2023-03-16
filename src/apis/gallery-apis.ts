@@ -12,13 +12,14 @@ export interface IFileDetails {
     id: string,
     downloadUri: string,
     displayName: string,
-    createdAtUtc: string
+    createdAtUtc: Date,
 }
 
 export interface IFolderDetails {
     createdAtUtc: string,
     displayName: string,
     files: Array<IFileDetails>,
+    id: string,
 }
 
 const buildRequestConfigWithAuthorization = async (additionalConfig?: AxiosRequestConfig) => ({
@@ -28,7 +29,7 @@ const buildRequestConfigWithAuthorization = async (additionalConfig?: AxiosReque
     },
 });
 
-const uploadAsync = async (files: FileList, folderDisplayName: string | null, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<string[]>> => {
+const uploadAsync = async (files: FileList, folderDisplayName: string | null, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<string>> => {
     let response = null, messages = ['Upload completed.'];
     try {
         response = await axios.postForm(`${REACT_APP_GALLERY_ENDPOINT}/gallery`, {
@@ -41,27 +42,42 @@ const uploadAsync = async (files: FileList, folderDisplayName: string | null, ax
 
     return {
         success: response && response.data,
-        data: (response && response.data) || new Array<string>(),
+        data: (response && response.data) || null,
         messages,
     };
 };
 
-const deleteAsync = async (fileName: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<any>> => {
+const deleteFileAsync = async (fileId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<boolean>> => {
     let response = null, messages = ['Upload completed.'];
     try {
-        response = await axios.delete(`${REACT_APP_GALLERY_ENDPOINT}/gallery/${fileName}`, await buildRequestConfigWithAuthorization(axiosRequestConfig));
+        response = await axios.delete(`${REACT_APP_GALLERY_ENDPOINT}/gallery/file/${fileId}`, await buildRequestConfigWithAuthorization(axiosRequestConfig));
     } catch (error: any) {
         messages = handleError(error);
     }
 
     return {
         success: response && response.data,
-        data: null,
+        data: response?.data,
         messages,
     };
 };
 
-const listAllAsync = async (axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<string[]>> => {
+const deleteFolderAsync = async (folderId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<boolean>> => {
+    let response = null, messages = ['Upload completed.'];
+    try {
+        response = await axios.delete(`${REACT_APP_GALLERY_ENDPOINT}/gallery/folder/${folderId}`, await buildRequestConfigWithAuthorization(axiosRequestConfig));
+    } catch (error: any) {
+        messages = handleError(error);
+    }
+
+    return {
+        success: response && response.data,
+        data: response?.data,
+        messages,
+    };
+};
+
+const getFoldersAsync = async (axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<IFolderDetails[]>> => {
     let response = null, messages = new Array<string>();
     try {
         response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery', await buildRequestConfigWithAuthorization(axiosRequestConfig));
@@ -71,15 +87,15 @@ const listAllAsync = async (axiosRequestConfig?: AxiosRequestConfig): Promise<IA
 
     return {
         success: !!response,
-        data: (response && response.data) || new Array<string>(),
+        data: (response && response.data) || new Array<IFolderDetails>(),
         messages,
     };
 };
 
-const getDetailsAsync = async (fileName: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<string>> => {
+const getFileDetailsAsync = async (fileId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<IFileDetails>> => {
     let response = null, messages = new Array<string>();
     try {
-        response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery/' + fileName, {
+        response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery/file/' + fileId, {
             ...axiosRequestConfig,
         });
     } catch (error: any) {
@@ -123,8 +139,9 @@ function handleError(error: any): string[] {
 
 export {
     uploadAsync,
-    deleteAsync,
-    listAllAsync,
-    getDetailsAsync,
-    getFolderDetailsAsync as getFolderFiles,
+    deleteFileAsync,
+    getFileDetailsAsync,
+    getFoldersAsync,
+    getFolderDetailsAsync,
+    deleteFolderAsync,
 };

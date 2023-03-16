@@ -1,13 +1,14 @@
-import React, { CSSProperties, useEffect, useState } from 'react';
-import { ContentCopy, DeleteForever, Done, Share } from '@mui/icons-material';
-import { Box, Button, Zoom } from '@mui/material';
+import React, { CSSProperties, useCallback, useEffect, useState } from 'react';
+import { ContentCopy, DeleteForever, Done, Download, Share } from '@mui/icons-material';
+import { Box, Button, Typography, Zoom } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { deleteAsync, getDetailsAsync } from '../apis/gallery-apis';
+import { deleteFileAsync, getFileDetailsAsync, IFileDetails } from '../apis/gallery-apis';
 import LoadingDiv from '../components/LoadingDiv';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 import { AuthenticatedTemplate } from '@azure/msal-react';
 import { mobileShareAsync } from '../utils';
+import { imageExtensions } from '../constants/file-extensions';
 
 const mediaStyle: CSSProperties = {
     maxHeight: 'calc(100% - 48px)',
@@ -15,34 +16,35 @@ const mediaStyle: CSSProperties = {
 };
 
 function MediaDetailsPage() {
-    const [publicUrl, setPublicUrl] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [copied, setCopied] = useState(false);
+    const { id } = useParams();
+    if (!id) {
+        throw new Error('User supposed to be routed to 404 page instead. Please check routing again.');
+    }
+
     const navigate = useNavigate();
-
-    const { fileName } = useParams();
-
-    if (!fileName) {
-        throw new Error(`Invalid url. Could not detect file name in this url: '${window.location.href}'`);
-    }
-
-    const fileExtension: string | undefined = fileName.split('.')?.pop()?.toUpperCase();
-    if (!fileExtension) {
-        throw new Error(`Could not detect file extension in file name: '${fileName}'`);
-    }
+    const [fileDetails, setFileDetails] = useState<IFileDetails | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const fetchDataAsync = async () => {
-            setLoading(true);
-            const { data } = await getDetailsAsync(fileName);
-            setPublicUrl(data);
-            setLoading(false);
+            setIsLoading(true);
+            const { data } = await getFileDetailsAsync(id);
+            if (!data) {
+                navigate('/404');
+                return;
+            }
+            setFileDetails({
+                ...data,
+                createdAtUtc: new Date(data.createdAtUtc),
+            });
+            setIsLoading(false);
         };
 
         fetchDataAsync();
-    }, [fileName]);
+    }, [id, navigate]);
 
-    const onCopyToClipboardClick = () => {
+    const onCopyToClipboardClick = useCallback(() => {
         if (copied) {
             return;
         }
@@ -53,30 +55,34 @@ function MediaDetailsPage() {
             // reset copied status
             setTimeout(() => { setCopied(false); }, 5000);
         });
-    };
+    }, [copied]);
 
     const onDeleteClick = async () => {
         if (window.confirm('Deleted media is lost forever. Are you sure you want to do this?')) {
-            await deleteAsync(fileName);
+            await deleteFileAsync(id);
             navigate('/');
         }
     };
 
-    const onShareClick = () => {
+    const onShareClick = useCallback(() => {
         mobileShareAsync({ url: window.location.href });
-    };
+    }, []);
 
-    if (loading) {
+    if (isLoading || !fileDetails) {
         return <LoadingDiv />;
     }
 
-    const imageExtensions = ['JPG', 'JPEG', 'PNG'];
+    const fileExtension: string | undefined = fileDetails?.displayName.split('.')?.pop()?.toUpperCase();
+    if (!fileExtension) {
+        throw new Error(`Could not detect file extension of file with id: '${id}'`);
+    }
+
     const isImage = imageExtensions.indexOf(fileExtension) >= 0;
 
     const previewEl = isImage ?
         (<img
-            src={publicUrl}
-            alt={fileName}
+            src={fileDetails.downloadUri}
+            alt={id}
             loading='lazy'
             style={mediaStyle}
         />)
@@ -86,14 +92,27 @@ function MediaDetailsPage() {
             preload='metadata'
             style={mediaStyle}
         >
-            <source src={publicUrl} />
+            <source src={fileDetails.downloadUri} />
         </video>);
     return (
         <PageBody style={{ textAlign: 'center' }}>
-            <PageHeading heading={fileName} />
+            <PageHeading heading={fileDetails.displayName} />
+            <Typography variant='subtitle1'>Uploaded at: {fileDetails.createdAtUtc?.toLocaleString('en-GB')}</Typography>
             <Box sx={{ flex: '1 1', overflow: 'hidden', marginBottom: '0.5rem' }}>
                 {previewEl}
                 <Box>
+                    <Button
+                        href={fileDetails.downloadUri}
+                        target="_blank"
+                        rel="noreferrer"
+                        title='Download'
+                        startIcon={<Download />}
+                        size='medium'
+                        variant='outlined'
+                        sx={{ marginRight: '.5rem' }}
+                    >
+                        Download
+                    </Button>
                     <Button
                         size="medium"
                         color={copied ? 'success' : 'primary'}
@@ -137,7 +156,6 @@ function MediaDetailsPage() {
             </Box>
         </PageBody>
     );
-
 }
 
 export default MediaDetailsPage;
