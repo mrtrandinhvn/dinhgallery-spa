@@ -6,6 +6,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import ListItemLink from './ListItemLink';
 import SignInSignoutButton from './SignInSignoutButton';
 import WelcomeName from './WelcomeName';
+import packageJson from '../../package.json';
 
 const { REACT_APP_REPOSITORY_URL = '#' } = process.env;
 
@@ -107,17 +108,18 @@ const MyAppbar = () => {
                     >
                         <MenuIcon />
                     </IconButton>
+
+                    <Button
+                        component={RouterLink}
+                        sx={{ color: '#fff' }}
+                        to='/'>
+                        Dinh Gallery
+                    </Button>
                     <Typography
-                        variant="h6"
+                        variant="overline"
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-                    >
-                        <Button
-                            component={RouterLink}
-                            sx={{ color: '#fff' }}
-                            to='/'>
-                            Dinh Gallery
-                        </Button>
+                    >v{packageJson.version}
                     </Typography>
                     <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                         <AuthenticatedTemplate>

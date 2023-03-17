@@ -1,42 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { deleteAsync, listAllAsync } from '../apis/gallery-apis';
-import GalleryList from '../components/GalleryList';
+import React, { useCallback, useEffect, useState } from 'react';
+import { getFoldersAsync } from '../apis/gallery-apis';
+import GalleryFolder from '../components/GalleryFolder';
 import LoadingDiv from '../components/LoadingDiv';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 
 const GalleryPage = () => {
-    const [urls, setUrls] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [folderIds, setFolderIds] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchDataAsync = async () => {
-        setLoading(true);
-        const { data } = await listAllAsync();
-        setUrls(data);
-        setLoading(false);
+        setIsLoading(true);
+        const { data } = await getFoldersAsync();
+        setFolderIds(data.map(x => x.id));
+        setIsLoading(false);
     };
 
     useEffect(() => {
         fetchDataAsync();
     }, []);
 
-    const deleteMediaHandle = async (mediaName: string) => {
-        const { success, messages } = await deleteAsync(mediaName);
-        if (success) {
-            setUrls(urls.filter(url => url.split('/').pop() !== mediaName));
-        } else {
-            alert(messages);
-        }
-    };
+    const deleteFolderHandle = useCallback((folderId: string) => {
+        setFolderIds(folderIds.filter(x => x !== folderId));
+    }, [folderIds]);
 
-    if (loading) {
+    if (isLoading) {
         return <LoadingDiv />;
     }
 
     return (
         <PageBody>
             <PageHeading heading='Gallery' />
-            <GalleryList urls={urls} deleteItemHandle={deleteMediaHandle} />
+            {folderIds.map(folderId => <GalleryFolder key={folderId} folderId={folderId} deleteFolder={deleteFolderHandle} />)}
         </PageBody>
     );
 };

@@ -1,9 +1,9 @@
 import { Clear, Upload } from '@mui/icons-material';
 import { Button, Grid, Typography, useMediaQuery } from '@mui/material';
 import json2mq from 'json2mq';
-import React, { FormEvent, useRef, useState } from 'react';
-import { deleteAsync, uploadAsync } from '../apis/gallery-apis';
-import GalleryList from '../components/GalleryList';
+import React, { FormEvent, useCallback, useRef, useState } from 'react';
+import { uploadAsync } from '../apis/gallery-apis';
+import GalleryFolder from '../components/GalleryFolder';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 
@@ -11,7 +11,7 @@ function UploadPage() {
     const [messages, setMessages] = useState<string[]>([]);
     const [files, setFiles] = useState<FileList | null>(null);
     const [uploading, setUploading] = useState(false);
-    const [savedFiles, setSavedFiles] = useState<string[]>([]);
+    const [savedFolderId, setSavedFolderId] = useState<string | null>(null);
 
     const isMobile = useMediaQuery(
         json2mq({
@@ -40,7 +40,7 @@ function UploadPage() {
             return;
         }
 
-        const result = await uploadAsync(files, {
+        const result = await uploadAsync(files, null, {
             onUploadProgress: function ({ lengthComputable, loaded, total }) {
                 // Do whatever you want with the native progress event
                 setMessages([...messages, 'uploading...']);
@@ -57,14 +57,18 @@ function UploadPage() {
 
         setMessages(result.messages);
         if (result.success) {
-            setSavedFiles(result.data);
+            setSavedFolderId(result.data);
         } else {
-            setSavedFiles([]);
+            setSavedFolderId(null);
         }
 
         setUploading(false);
         clearFiles();
     };
+
+    const deleteFolderHandle = useCallback((folderId: string) => {
+        setSavedFolderId(null);
+    }, []);
 
     const clearFiles = () => {
         setFiles(null);
@@ -76,17 +80,8 @@ function UploadPage() {
         clearFiles();
     };
 
-    const deleteMediaHandle = async (mediaName: string) => {
-        const { success, messages } = await deleteAsync(mediaName);
-        if (success) {
-            setSavedFiles(savedFiles.filter(url => url.split('/').pop() !== mediaName));
-        } else {
-            alert(messages);
-        }
-    };
-
     const hasFiles = !!files && files.length > 0;
-    const hasSavedFiles = savedFiles.length > 0;
+    const hasSavedFiles = !!savedFolderId;
 
     return (
         <PageBody
@@ -167,7 +162,7 @@ function UploadPage() {
                 </Grid>
             </Grid>
             <div className='gallery'>
-                {hasSavedFiles && <GalleryList urls={savedFiles} deleteItemHandle={deleteMediaHandle} />}
+                {hasSavedFiles && <GalleryFolder folderId={savedFolderId} deleteFolder={deleteFolderHandle} />}
             </div>
         </PageBody>
     );
