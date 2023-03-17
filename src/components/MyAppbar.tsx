@@ -88,7 +88,6 @@ const MyAppbar = () => {
 
     const handleOpenAccountMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
-        console.log(event.currentTarget);
     };
 
     const handleAccountMenuClose = () => {

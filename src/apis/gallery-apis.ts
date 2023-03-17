@@ -112,7 +112,7 @@ const getFileDetailsAsync = async (fileId: string, axiosRequestConfig?: AxiosReq
 const getFolderDetailsAsync = async (folderId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<IFolderDetails>> => {
     let response = null, messages = new Array<string>();
     try {
-        response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery/folder/' + folderId, await buildRequestConfigWithAuthorization(axiosRequestConfig));
+        response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery/folder/' + folderId, { ...axiosRequestConfig });
     } catch (error: any) {
         messages = handleError(error);
     }
@@ -131,9 +131,9 @@ function handleError(error: any): string[] {
             return ['Unauthorized. You need to sign in first.', JSON.stringify(axiosError.response.data)];
         case 403:
             return ['Forbidden. You do not have access to this app, please ask site\'s admin for his approval.', JSON.stringify(axiosError.response.data)];
-
     }
 
+    console.error(error);
     return ['Some errors occurred with the api.', error.toString()];
 }
 

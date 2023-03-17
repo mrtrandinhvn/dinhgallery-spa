@@ -75,7 +75,6 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
     }, [deleteFolder, folderId]);
 
     if (!isLoading && !folderDetails) {
-        console.log(folderDetails);
         return <NotFoundPage />;
     }
 
