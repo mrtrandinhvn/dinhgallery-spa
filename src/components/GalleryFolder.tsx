@@ -12,6 +12,7 @@ import CopyIconButton from './CopyIconButton';
 import ShareIconButton from './ShareIconButton';
 import { getAbsoluteUrl } from '../utils';
 import { Link } from 'react-router-dom';
+import { AuthenticatedTemplate } from '@azure/msal-react';
 
 interface IProps {
     folderId: string,
@@ -102,13 +103,15 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
 
                         <ShareIconButton url={detailsPageAbsoluteUrl} />
                         <CopyIconButton url={detailsPageAbsoluteUrl} />
-                        <IconButton
-                            title={'Click to delete'}
-                            aria-label={'Click to delete'}
-                            onClick={localOnDeleteClick}
-                        >
-                            <DeleteForeverOutlined color='error' />
-                        </IconButton>
+                        <AuthenticatedTemplate>
+                            <IconButton
+                                title={'Click to delete'}
+                                aria-label={'Click to delete'}
+                                onClick={localOnDeleteClick}
+                            >
+                                <DeleteForeverOutlined color='error' />
+                            </IconButton>
+                        </AuthenticatedTemplate>
                     </Grid2>
                 </Grid2 >
             }
