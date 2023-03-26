@@ -8,7 +8,6 @@ import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 import { AuthenticatedTemplate } from '@azure/msal-react';
 import { mobileShareAsync } from '../utils';
-import { imageExtensions } from '../constants/file-extensions';
 
 const mediaStyle: CSSProperties = {
     maxHeight: 'calc(100% - 48px)',
@@ -77,23 +76,15 @@ function MediaDetailsPage() {
         throw new Error(`Could not detect file extension of file with id: '${id}'`);
     }
 
-    const isImage = imageExtensions.indexOf(fileExtension) >= 0;
-
-    const previewEl = isImage ?
-        (<img
-            src={fileDetails.downloadUri}
-            alt={id}
-            loading='lazy'
-            style={mediaStyle}
-        />)
-        :
-        (<video
+    const previewEl = (
+        <video
             controls
             preload='metadata'
             style={mediaStyle}
         >
             <source src={fileDetails.downloadUri} />
-        </video>);
+        </video>
+    );
     return (
         <PageBody style={{ textAlign: 'center' }}>
             <PageHeading heading={fileDetails.displayName} />

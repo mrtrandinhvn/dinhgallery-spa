@@ -1,17 +1,18 @@
 import { Clear, Upload } from '@mui/icons-material';
-import { Button, Grid, Typography, useMediaQuery } from '@mui/material';
+import { Button, Grid, TextField, Typography, useMediaQuery } from '@mui/material';
 import json2mq from 'json2mq';
-import React, { FormEvent, useCallback, useRef, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react';
 import { uploadAsync } from '../apis/gallery-apis';
 import GalleryFolder from '../components/GalleryFolder';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 
-function UploadPage() {
+export default function UploadPage() {
     const [messages, setMessages] = useState<string[]>([]);
     const [files, setFiles] = useState<FileList | null>(null);
     const [uploading, setUploading] = useState(false);
     const [savedFolderId, setSavedFolderId] = useState<string | null>(null);
+    const [folderName, setFolderName] = useState<string>('');
 
     const isMobile = useMediaQuery(
         json2mq({
@@ -40,7 +41,7 @@ function UploadPage() {
             return;
         }
 
-        const result = await uploadAsync(files, null, {
+        const result = await uploadAsync(files, folderName, {
             onUploadProgress: function ({ lengthComputable, loaded, total }) {
                 // Do whatever you want with the native progress event
                 setMessages([...messages, 'uploading...']);
@@ -63,21 +64,26 @@ function UploadPage() {
         }
 
         setUploading(false);
-        clearFiles();
+        resetForm();
     };
 
     const deleteFolderHandle = useCallback((folderId: string) => {
         setSavedFolderId(null);
     }, []);
 
-    const clearFiles = () => {
+    const onFolderNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setFolderName(e.target.value);
+    };
+
+    const resetForm = () => {
         setFiles(null);
+        setFolderName('');
         formRef?.current?.reset();
     };
 
     const onClearClick = () => {
         setMessages([]);
-        clearFiles();
+        resetForm();
     };
 
     const hasFiles = !!files && files.length > 0;
@@ -101,16 +107,35 @@ function UploadPage() {
                     xs={12}
                     item
                 >
-                    <Button
-                        variant="outlined"
-                        component="label"
-                        disabled={uploading}
-                    >
-                        Select files
-                        <input hidden type="file" name="files"
-                            accept="video/*, image/*, audio/*" onInput={onFieldChange}
-                            multiple disabled={uploading} />
-                    </Button>
+                    <TextField
+                        label="Folder name (Optional)"
+                        value={folderName}
+                        onChange={onFolderNameChange}
+                        name="folderName"
+                        inputProps={{ maxLength: 250 }}
+                    />
+                </Grid>
+                <Grid
+                    xs={12}
+                    item
+                >
+                    <input
+                        id='fileInput'
+                        hidden
+                        type="file"
+                        name="files"
+                        onInput={onFieldChange}
+                        multiple disabled={uploading} />
+                    <label htmlFor='fileInput'>
+                        <Button
+                            variant="outlined"
+                            disabled={uploading}
+                            component="span"
+                        >
+                            Select files
+
+                        </Button>
+                    </label>
                 </Grid>
                 <Grid
                     xs={12}
@@ -168,4 +193,3 @@ function UploadPage() {
     );
 }
 
-export default UploadPage;

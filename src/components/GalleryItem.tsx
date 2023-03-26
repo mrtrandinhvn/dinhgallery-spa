@@ -1,9 +1,9 @@
-import { DeleteForeverOutlined, Download, ExitToApp } from '@mui/icons-material';
+import { Article, DeleteForeverOutlined, Download, ExitToApp } from '@mui/icons-material';
 import { Box, IconButton, ImageListItem, ImageListItemBar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { IFileDetails } from '../apis/gallery-apis';
-import { imageExtensions } from '../constants/file-extensions';
+import { FileType, getFileType } from '../constants/file-extensions';
 import { getAbsoluteUrl } from '../utils';
 import CopyIconButton from './CopyIconButton';
 import ShareIconButton from './ShareIconButton';
@@ -13,7 +13,43 @@ interface IProps {
     deleteItem: (fileName: string) => void,
 }
 
-function GalleryItem({ details, deleteItem }: IProps) {
+const ItemPreview = ({ fileType, downloadUri }: { fileType: FileType, downloadUri: string }) => {
+    switch (fileType) {
+        case 'IMAGE':
+            return <img
+                src={downloadUri}
+                alt="Default alt"
+                loading='lazy'
+            />;
+
+        case 'VIDEO':
+            return <video
+                src={downloadUri}
+                controls
+                preload="metadata"
+            />;
+
+        default:
+            return (
+                <Box sx={{
+                    width: '100%',
+                    height: '230px',
+                    textAlign: 'center',
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
+                }}>
+                    <Article sx={{ fontSize: '100pt' }} />
+                </Box>
+            );
+    }
+};
+
+function getDetailsPage(fileType: FileType, details: IFileDetails) {
+    return fileType === 'VIDEO' ? `/file/${details.id}` : details.downloadUri;
+}
+
+export default function GalleryItem({ details, deleteItem }: IProps) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -22,13 +58,8 @@ function GalleryItem({ details, deleteItem }: IProps) {
         throw new Error(`Invalid url. Could not detect file name in this url: '${details.downloadUri}'`);
     }
 
-    const fileExtension: string | undefined = fileName.split('.')?.pop()?.toUpperCase();
-    if (!fileExtension) {
-        throw new Error(`Could not detect file extension in file name: '${fileName}'`);
-    }
-
-    const isImage = imageExtensions.indexOf(fileExtension) >= 0;
-    const detailsPage = isImage ? details.downloadUri : `/file/${details.id}`;
+    const fileType = getFileType(fileName);
+    const detailsPage = getDetailsPage(fileType, details);
     const detailsPageAbsoluteUrl = getAbsoluteUrl(detailsPage);
 
     const localOnDeleteClick = useCallback(() => {
@@ -37,29 +68,14 @@ function GalleryItem({ details, deleteItem }: IProps) {
         }
     }, [deleteItem, details.id]);
 
-    const previewEl = imageExtensions.indexOf(fileExtension) >= 0 ?
-        <img
-            src={details.downloadUri}
-            alt="Default alt"
-            loading='lazy'
-        />
-        :
-        <video
-            src={details.downloadUri}
-            controls
-            preload="metadata"
-        />;
     return (
         <ImageListItem
             sx={{
                 borderRadius: '0.4rem',
                 overflow: 'hidden',
             }}>
-            {previewEl}
+            <ItemPreview fileType={fileType} downloadUri={details.downloadUri} />
             <ImageListItemBar
-                sx={{
-                    // background: 'rgba(255, 255, 255, 0.5)',
-                }}
                 title={
                     <Box>
                         <Typography variant='h6'>{details.displayName}</Typography>
@@ -68,7 +84,7 @@ function GalleryItem({ details, deleteItem }: IProps) {
                 subtitle={
                     <Box style={{ minWidth: '80px', textAlign: 'right' }}>
                         {
-                            isImage ?
+                            fileType ?
                                 null
                                 : <Link to={detailsPage} title='Go to details page'>
                                     <IconButton color='primary'>
@@ -101,5 +117,3 @@ function GalleryItem({ details, deleteItem }: IProps) {
         </ImageListItem>
     );
 }
-
-export default GalleryItem;

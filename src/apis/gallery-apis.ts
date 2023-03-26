@@ -32,10 +32,13 @@ const buildRequestConfigWithAuthorization = async (additionalConfig?: AxiosReque
 const uploadAsync = async (files: FileList, folderDisplayName: string | null, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<string>> => {
     let response = null, messages = ['Upload completed.'];
     try {
-        response = await axios.postForm(`${REACT_APP_GALLERY_ENDPOINT}/gallery`, {
-            'files[]': files,
-            folderDisplayName,
-        }, await buildRequestConfigWithAuthorization(axiosRequestConfig));
+        const formData = new FormData();
+        formData.append('folderDisplayName', folderDisplayName || '');
+        for (const file of files) {
+            formData.append('files', file, file.name);
+        }
+
+        response = await axios.post(`${REACT_APP_GALLERY_ENDPOINT}/gallery`, formData, await buildRequestConfigWithAuthorization(axiosRequestConfig));
     } catch (error: any) {
         messages = handleError(error);
     }
