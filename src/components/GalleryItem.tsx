@@ -73,6 +73,7 @@ export default function GalleryItem({ details, deleteItem }: IProps) {
             sx={{
                 borderRadius: '0.4rem',
                 overflow: 'hidden',
+                minHeight: '100px',
             }}>
             <ItemPreview
                 fileType={fileType}
