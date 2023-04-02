@@ -13,12 +13,12 @@ interface IProps {
     deleteItem: (fileName: string) => void,
 }
 
-const ItemPreview = ({ fileType, downloadUri }: { fileType: FileType, downloadUri: string }) => {
+const ItemPreview = ({ fileType, downloadUri, alt = '' }: { fileType: FileType, downloadUri: string, alt?: string }) => {
     switch (fileType) {
         case 'IMAGE':
             return <img
                 src={downloadUri}
-                alt="Default alt"
+                alt={alt}
                 loading='lazy'
             />;
 
@@ -74,7 +74,10 @@ export default function GalleryItem({ details, deleteItem }: IProps) {
                 borderRadius: '0.4rem',
                 overflow: 'hidden',
             }}>
-            <ItemPreview fileType={fileType} downloadUri={details.downloadUri} />
+            <ItemPreview
+                fileType={fileType}
+                downloadUri={details.downloadUri}
+                alt={details.displayName} />
             <ImageListItemBar
                 title={
                     <Box>
