@@ -13,7 +13,7 @@ export function getFileType(fileName: string): FileType {
         return 'IMAGE';
     }
 
-    if (videoExtensions.indexOf(fileExtension) > 0) {
+    if (videoExtensions.indexOf(fileExtension) >= 0) {
         return 'VIDEO';
     }
 

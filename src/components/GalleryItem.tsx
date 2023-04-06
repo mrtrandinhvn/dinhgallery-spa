@@ -88,13 +88,13 @@ export default function GalleryItem({ details, deleteItem }: IProps) {
                 subtitle={
                     <Box style={{ minWidth: '80px', textAlign: 'right' }}>
                         {
-                            fileType ?
-                                null
-                                : <Link to={detailsPage} title='Go to details page'>
+                            fileType === 'VIDEO' ?
+                                <Link to={detailsPage} title='Go to details page'>
                                     <IconButton color='primary'>
                                         <ExitToApp />
                                     </IconButton>
                                 </Link>
+                                : null
                         }
                         <a
                             href={details.downloadUri}
