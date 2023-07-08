@@ -17,6 +17,7 @@ const ItemPreview = ({ fileType, downloadUri, alt = '' }: { fileType: FileType, 
     switch (fileType) {
         case 'IMAGE':
             return <img
+                style={{minHeight: '200px'}}
                 src={downloadUri}
                 alt={alt}
                 loading='lazy'
