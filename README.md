@@ -1,3 +1,9 @@
+# My Personal Gallery SPA repository
+This repository contains the frontend code for my personal file sharing system. The backend code of of the site is in this repository: https://github.com/mrtrandinhvn/dinhgallery-api.
+
+=========================
+
+Legacy README
 # Getting Started with Create React App
 Nodejs v20.
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
