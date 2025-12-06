@@ -1,7 +1,7 @@
 import React from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import { Box, createTheme, NoSsr, ThemeProvider } from '@mui/material';
-import MyAppbar from './components/MyAppbar';
+import MyAppbar from './components/MyAppBar';
 import { Outlet } from 'react-router-dom';
 import { green, purple } from '@mui/material/colors';
 import { msalInstance } from './authConfig';
@@ -58,7 +58,7 @@ export default function App() {
                     <Box sx={{ display: 'flex', height: '100vh' }}>
                         <MyAppbar />
                         <Box component="main" sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <Toolbar />
+                            <Toolbar /> {/* this line is needed to offset the fixed appbar */}
                             <Outlet />
                         </Box>
                     </Box>

@@ -72,8 +72,6 @@ const DrawerBody = ({ handleDrawerToggle }: IDrawerBody) => {
     );
 };
 
-
-
 const MyAppbar = () => {
     const container = window !== undefined ? () => window.document.body : undefined;
     const { instance } = useMsal();
