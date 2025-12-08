@@ -115,7 +115,7 @@ const MyAppbar = () => {
                     <Typography
                         variant="overline"
                         component="div"
-                        sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+                        sx={{ flexGrow: 1, display: { sm: 'block' } }}
                     >v{packageJson.version}
                     </Typography>
                     <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
