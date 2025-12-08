@@ -1,9 +1,20 @@
 {
   "id": "/",
   "name": "Dinh Gallery",
-  "short_name": "Gallery",
-  "description": "A simple photo sharing website.",
+  "short_name": "Dinh Gallery",
+  "description": "Dinh's file sharing website.",
   "icons": [
+    {
+      "src": "/icons/icon-180-maskable.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
