@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { deleteFileAsync, deleteFolderAsync, getFolderDetailsAsync, IFileDetails } from '../apis/gallery-apis';
 import LoadingDiv from './LoadingDiv';
 import NotFoundPage from '../pages/NotFoundPage';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
+import Grid from '@mui/material/Grid';
 import { ExitToApp, DeleteForeverOutlined } from '@mui/icons-material';
 import CopyIconButton from './CopyIconButton';
 import ShareIconButton from './ShareIconButton';
@@ -85,16 +85,16 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
     return (
         <Box className='gallery-folder' marginBottom={'1rem'}>
             {folderDetails &&
-                <Grid2 container spacing={0} marginBottom={2}>
-                    <Grid2 xs={12} sm={8}>
+                <Grid container spacing={0} marginBottom={2}>
+                    <Grid size={{ xs: 12, sm: 8 }}>
                         <Typography variant='h5'>
                             {folderDetails.displayName}
                         </Typography>
                         <Typography variant='subtitle1'>
                             Uploaded at: {folderDetails.createdAtUtc?.toLocaleString('en-GB')}
                         </Typography>
-                    </Grid2>
-                    <Grid2 xs={8} sm={4} sx={{ textAlign: isMobile ? 'left' : 'right' }}>
+                    </Grid>
+                    <Grid size={{ xs: 8, sm: 4 }} sx={{ textAlign: isMobile ? 'left' : 'right' }}>
                         <Link to={detailsPage} title='Go to details page'>
                             <IconButton color='primary'>
                                 <ExitToApp />
@@ -112,8 +112,8 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
                                 <DeleteForeverOutlined color='error' />
                             </IconButton>
                         </AuthenticatedTemplate>
-                    </Grid2>
-                </Grid2 >
+                    </Grid>
+                </Grid >
             }
             {
                 isLoading ?
