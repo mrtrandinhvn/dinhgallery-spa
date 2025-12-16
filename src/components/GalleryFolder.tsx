@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { deleteFileAsync, deleteFolderAsync, getFolderDetailsAsync, IFileDetails } from '../apis/gallery-apis';
 import LoadingDiv from './LoadingDiv';
 import NotFoundPage from '../pages/NotFoundPage';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { ExitToApp, DeleteForeverOutlined } from '@mui/icons-material';
 import CopyIconButton from './CopyIconButton';
 import ShareIconButton from './ShareIconButton';

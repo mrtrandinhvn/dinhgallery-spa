@@ -104,8 +104,7 @@ export default function UploadPage() {
                 sx={{ marginTop: 0 }}
             >
                 <Grid
-                    xs={12}
-                    item
+                    size={{ xs: 12 }}
                 >
                     <TextField
                         label="Folder name (Optional)"
@@ -116,8 +115,7 @@ export default function UploadPage() {
                     />
                 </Grid>
                 <Grid
-                    xs={12}
-                    item
+                    size={{ xs: 12 }}
                 >
                     <input
                         id='fileInput'
@@ -138,8 +136,7 @@ export default function UploadPage() {
                     </label>
                 </Grid>
                 <Grid
-                    xs={12}
-                    item
+                    size={{ xs: 12 }}
                 >
                     <Button
                         variant='contained'
@@ -163,18 +160,18 @@ export default function UploadPage() {
                     </Button>
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                     {messages.length > 0 && <pre>{messages.map(x => x + '\r\n')}</pre>}
                 </Grid>
 
-                <Grid item xs={12} container columns={isMobile ? 4 : files?.length === 1 ? 4 : files?.length === 2 ? 8 : files?.length || 0 >= 3 ? 12 : 12}>
+                <Grid size={{ xs: 12 }} container columns={isMobile ? 4 : files?.length === 1 ? 4 : files?.length === 2 ? 8 : files?.length || 0 >= 3 ? 12 : 12}>
                     {hasFiles && (
                         <>
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <Typography>Selected files details</Typography>
                             </Grid>
                             {Array.from(files).map(file => (
-                                <Grid key={file.name} item xs={4}>
+                                <Grid key={file.name} size={{ xs: 4 }}>
                                     <pre>
                                         <div>Filename: {file.name}</div>
                                         <div>Filetype: {file.type}</div>
