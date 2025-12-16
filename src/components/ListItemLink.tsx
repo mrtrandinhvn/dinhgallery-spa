@@ -1,21 +1,20 @@
 import * as React from 'react';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import {
     Link as RouterLink,
     LinkProps as RouterLinkProps,
 } from 'react-router-dom';
+import { ListItemButton } from '@mui/material';
 
 interface ListItemLinkProps {
     icon?: React.ReactElement;
     primary: string;
     to: string;
-    disablePadding?: boolean;
 }
 
 function ListItemLink(props: ListItemLinkProps) {
-    const { icon, primary, to, disablePadding } = props;
+    const { icon, primary, to } = props;
 
     const renderLink = React.useMemo(
         () =>
@@ -30,10 +29,10 @@ function ListItemLink(props: ListItemLinkProps) {
 
     return (
         <li>
-            <ListItem button component={renderLink} disablePadding={disablePadding}>
+            <ListItemButton component={renderLink}>
                 {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
                 <ListItemText primary={primary} />
-            </ListItem>
+            </ListItemButton>
         </li>
     );
 }
