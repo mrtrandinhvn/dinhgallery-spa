@@ -2,8 +2,7 @@ import { Link, Typography } from '@mui/material';
 import React from 'react';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
-import LoadingDiv from '../components/LoadingDiv';
-import { useIsAuthenticated, useMsal } from '@azure/msal-react';
+import { useMsal } from '@azure/msal-react';
 import { loginRequest } from '../authConfig';
 
 const NeedSignInMessage = () => {
@@ -24,12 +23,6 @@ const NeedSignInMessage = () => {
 };
 
 const UnauthenticatedWelcomePage = () => {
-    const isAuthenticated = useIsAuthenticated();
-
-    if (isAuthenticated) {
-        return <LoadingDiv />; // There is a bug in msal-react where user can briefly see this component right after signing in
-    }
-
     return (
         <PageBody>
             <PageHeading heading="Hello there!"></PageHeading>
