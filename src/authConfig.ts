@@ -1,4 +1,4 @@
-import { PublicClientApplication } from '@azure/msal-browser';
+import { EventType, PublicClientApplication, type AccountInfo } from '@azure/msal-browser';
 
 export const msalConfig = {
     auth: {
@@ -35,4 +35,24 @@ export const getAccessTokenAsync = async () => {
         account: account,
     });
     return response.accessToken;
+};
+
+export const initializeAuth = () => {
+    // Default to using the first account if no account is active on page load
+    if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
+        // Account selection logic is app dependent. Adjust as needed for different use cases.
+        console.log('Set active account on page load');
+        msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0]);
+    }
+
+    // Optional - This will update account state if a user signs in from another tab or window
+    msalInstance.enableAccountStorageEvents();
+
+    msalInstance.addEventCallback((event) => {
+        if (event.eventType === EventType.LOGIN_SUCCESS && event?.payload) {
+            console.log('Set active account after signin');
+            const account = event.payload as AccountInfo;
+            msalInstance.setActiveAccount(account);
+        }
+    });
 };

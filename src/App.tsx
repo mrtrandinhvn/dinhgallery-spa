@@ -5,10 +5,8 @@ import NoSsr from '@mui/material/NoSsr';
 import MyAppBar from './components/MyAppBar';
 import { Outlet } from 'react-router-dom';
 import { green, purple } from '@mui/material/colors';
-import { getAccessTokenAsync, msalInstance } from './authConfig';
-import { EventType, type AccountInfo } from '@azure/msal-browser';
+import { msalInstance } from './authConfig';
 import { MsalProvider } from '@azure/msal-react';
-import { client } from './client/client.gen';
 
 const theme = createTheme({
     palette: {
@@ -33,29 +31,6 @@ const theme = createTheme({
     },
 });
 
-// Default to using the first account if no account is active on page load
-
-if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
-    // Account selection logic is app dependent. Adjust as needed for different use cases.
-    console.log('Set active account on page load');
-    msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0]);
-}
-
-// Optional - This will update account state if a user signs in from another tab or window
-msalInstance.enableAccountStorageEvents();
-
-msalInstance.addEventCallback((event) => {
-    if (event.eventType === EventType.LOGIN_SUCCESS && event?.payload) {
-        console.log('Set active account after signin');
-        const account = event.payload as AccountInfo;
-        msalInstance.setActiveAccount(account);
-    }
-});
-
-client.instance.interceptors.request.use(async (config) => {
-    config.headers.set('Authorization', `Bearer ${await getAccessTokenAsync()}`);
-    return config;
-});
 
 export default function App() {
     return (

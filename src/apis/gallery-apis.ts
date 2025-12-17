@@ -1,3 +1,5 @@
+import { getAccessTokenAsync } from '../authConfig';
+import { client as apiClient } from '../client/client.gen';
 import {
     deleteGalleryFileById,
     deleteGalleryFolderById,
@@ -32,7 +34,7 @@ export interface IFolderDetails {
 
 function mapFileDetails(file: FileDetailsReadModel): IFileDetails {
     return {
-        id: file.id?.toString() || '', 
+        id: file.id?.toString() || '',
         downloadUri: file.downloadUri || '',
         displayName: file.displayName || '',
         createdAtUtc: new Date(file.createdAtUtc || ''),
@@ -247,4 +249,13 @@ export {
     getFoldersAsync,
     getFolderDetailsAsync,
     deleteFolderAsync,
+};
+
+export const configApiClient = () => {
+    // Set the api client base URL from environment variable
+    apiClient.setConfig({ baseURL: import.meta.env.VITE_GALLERY_ENDPOINT });
+    apiClient.instance.interceptors.request.use(async (config) => {
+        config.headers.set('Authorization', `Bearer ${await getAccessTokenAsync()}`);
+        return config;
+    });
 };

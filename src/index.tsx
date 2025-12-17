@@ -14,6 +14,12 @@ import MediaDetailsPage from './pages/MediaDetailsPage';
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
 import FolderDetailsPage from './pages/FolderDetailsPage';
 import UnauthenticatedWelcomePage from './pages/UnauthenticatedWelcomePage';
+import { initializeAuth } from './authConfig';
+import { configApiClient } from './apis/gallery-apis';
+
+configApiClient();
+
+initializeAuth();
 
 const RoutedApp = <BrowserRouter>
     <Routes>
