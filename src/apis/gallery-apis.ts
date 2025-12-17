@@ -5,6 +5,7 @@ import {
     getGalleryFileById,
     getGalleryFolderById,
     postGallery,
+    postGalleryFolderByFolderIdFiles,
 } from '../client/sdk.gen';
 import type { FileDetailsReadModel, FolderDetailsReadModel } from '../client/types.gen';
 import type { AxiosProgressEvent } from 'axios';
@@ -56,6 +57,36 @@ const uploadAsync = async (
         const response = await postGallery({
             body: {
                 folderDisplayName: folderDisplayName || undefined,
+                files: Array.from(files),
+            },
+            ...options,
+        });
+
+        return {
+            success: true,
+            data: response.data?.toString() || '',
+            messages,
+        };
+    } catch (error: unknown) {
+        messages = handleError(error);
+        return {
+            success: false,
+            data: '',
+            messages,
+        };
+    }
+};
+
+const uploadFilesToFolderAsync = async (
+    folderId: string,
+    files: FileList,
+    options?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }): Promise<IApiResponse<string>> => {
+    let messages = ['Upload completed.'];
+    try {
+        const response = await postGalleryFolderByFolderIdFiles({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            path: { folderId: folderId as any },
+            body: {
                 files: Array.from(files),
             },
             ...options,
@@ -210,6 +241,7 @@ function handleError(error: unknown): string[] {
 
 export {
     uploadAsync,
+    uploadFilesToFolderAsync,
     deleteFileAsync,
     getFileDetailsAsync,
     getFoldersAsync,

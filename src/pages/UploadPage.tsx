@@ -1,7 +1,9 @@
 import Clear from '@mui/icons-material/Clear';
 import Upload from '@mui/icons-material/Upload';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
+import LinearProgress from '@mui/material/LinearProgress';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -11,11 +13,13 @@ import { uploadAsync } from '../apis/gallery-apis';
 import GalleryFolder from '../components/GalleryFolder';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
+import CloudUpload from '@mui/icons-material/CloudUpload';
 
 export default function UploadPage() {
     const [messages, setMessages] = useState<string[]>([]);
     const [files, setFiles] = useState<FileList | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState<number>(0);
     const [savedFolderId, setSavedFolderId] = useState<string | null>(null);
     const [folderName, setFolderName] = useState<string>('');
 
@@ -40,24 +44,21 @@ export default function UploadPage() {
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setUploading(true);
+        setUploadProgress(0);
+        setMessages([]);
 
         if (!files) {
             setMessages(['Please select at least one file.']);
+            setUploading(false);
             return;
         }
 
         const result = await uploadAsync(files, folderName, {
             onUploadProgress: function (progressEvent) {
-                // Do whatever you want with the native progress event
                 const { loaded, total } = progressEvent;
-                setMessages([...messages, 'uploading...']);
                 if (total) {
-                    const mess = [`uploading... ${Number(loaded * 100 / total).toFixed(2)}%`];
-                    if (loaded === total) {
-                        mess.push('Server is saving your media.');
-                    }
-
-                    setMessages(mess);
+                    const percentCompleted = Math.round((loaded * 100) / total);
+                    setUploadProgress(percentCompleted);
                 }
             },
         });
@@ -70,6 +71,7 @@ export default function UploadPage() {
         }
 
         setUploading(false);
+        setUploadProgress(0);
         resetForm();
     };
 
@@ -132,12 +134,12 @@ export default function UploadPage() {
                         multiple disabled={uploading} />
                     <label htmlFor='fileInput'>
                         <Button
+                            startIcon={<CloudUpload />}
                             variant="outlined"
                             disabled={uploading}
                             component="span"
                         >
                             Select files
-
                         </Button>
                     </label>
                 </Grid>
@@ -167,7 +169,15 @@ export default function UploadPage() {
                 </Grid>
 
                 <Grid size={{ xs: 12 }}>
-                    {messages.length > 0 && <pre>{messages.map(x => x + '\r\n')}</pre>}
+                    {uploading && (
+                        <Box sx={{ width: '100%', mt: 2 }}>
+                            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                                Uploading files... {uploadProgress}%
+                            </Typography>
+                            <LinearProgress variant='determinate' value={uploadProgress} />
+                        </Box>
+                    )}
+                    {!uploading && messages.length > 0 && <pre>{messages.map(x => x + '\r\n')}</pre>}
                 </Grid>
 
                 <Grid size={{ xs: 12 }} container columns={isMobile ? 4 : files?.length === 1 ? 4 : files?.length === 2 ? 8 : files?.length || 0 >= 3 ? 12 : 12}>

@@ -54,7 +54,6 @@ msalInstance.addEventCallback((event) => {
 
 client.instance.interceptors.request.use(async (config) => {
     config.headers.set('Authorization', `Bearer ${await getAccessTokenAsync()}`);
-    console.log(config.headers);
     return config;
 });
 
