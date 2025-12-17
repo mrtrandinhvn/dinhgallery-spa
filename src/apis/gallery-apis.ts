@@ -1,6 +1,13 @@
-import axios, { AxiosError, type AxiosRequestConfig } from 'axios';
-import { getAccessTokenAsync } from '../authConfig';
-const VITE_GALLERY_ENDPOINT = import.meta.env.VITE_GALLERY_ENDPOINT;
+import {
+    deleteGalleryFileById,
+    deleteGalleryFolderById,
+    getGallery,
+    getGalleryFileById,
+    getGalleryFolderById,
+    postGallery,
+} from '../client/sdk.gen';
+import type { FileDetailsReadModel, FolderDetailsReadModel } from '../client/types.gen';
+import type { AxiosProgressEvent } from 'axios';
 
 interface IApiResponse<T> {
     success: boolean,
@@ -22,118 +29,179 @@ export interface IFolderDetails {
     id: string,
 }
 
-const buildRequestConfigWithAuthorization = async (additionalConfig?: AxiosRequestConfig) => ({
-    ...additionalConfig,
-    headers: {
-        'Authorization': `Bearer ${await getAccessTokenAsync()}`,
-    },
-});
-
-const uploadAsync = async (files: FileList, folderDisplayName: string | null, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<string>> => {
-    let response = null, messages = ['Upload completed.'];
-    try {
-        const formData = new FormData();
-        formData.append('folderDisplayName', folderDisplayName || '');
-        for (const file of files) {
-            formData.append('files', file, file.name);
-        }
-
-        response = await axios.post(`${VITE_GALLERY_ENDPOINT}/gallery`, formData, await buildRequestConfigWithAuthorization(axiosRequestConfig));
-    } catch (error: unknown) {
-        messages = handleError(error);
-    }
-
+function mapFileDetails(file: FileDetailsReadModel): IFileDetails {
     return {
-        success: response && response.data,
-        data: (response && response.data) || null,
-        messages,
+        id: file.id?.toString() || '', 
+        downloadUri: file.downloadUri || '',
+        displayName: file.displayName || '',
+        createdAtUtc: new Date(file.createdAtUtc || ''),
     };
-};
+}
 
-const deleteFileAsync = async (fileId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<boolean>> => {
-    let response = null, messages = ['Upload completed.'];
-    try {
-        response = await axios.delete(`${VITE_GALLERY_ENDPOINT}/gallery/file/${fileId}`, await buildRequestConfigWithAuthorization(axiosRequestConfig));
-    } catch (error: unknown) {
-        messages = handleError(error);
-    }
-
+function mapFolderDetails(folder: FolderDetailsReadModel): IFolderDetails {
     return {
-        success: response && response.data,
-        data: response?.data,
-        messages,
+        id: folder.id?.toString() || '',
+        displayName: folder.displayName || '',
+        createdAtUtc: folder.createdAtUtc || '',
+        files: (folder.files || []).map(mapFileDetails),
     };
-};
+}
 
-const deleteFolderAsync = async (folderId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<boolean>> => {
-    let response = null, messages = ['Upload completed.'];
+const uploadAsync = async (
+    files: FileList,
+    folderDisplayName: string | null,
+    options?: { onUploadProgress?: (progressEvent: AxiosProgressEvent) => void }): Promise<IApiResponse<string>> => {
+    let messages = ['Upload completed.'];
     try {
-        response = await axios.delete(`${VITE_GALLERY_ENDPOINT}/gallery/folder/${folderId}`, await buildRequestConfigWithAuthorization(axiosRequestConfig));
-    } catch (error: unknown) {
-        messages = handleError(error);
-    }
-
-    return {
-        success: response && response.data,
-        data: response?.data,
-        messages,
-    };
-};
-
-const getFoldersAsync = async (axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<IFolderDetails[]>> => {
-    let response = null, messages = new Array<string>();
-    try {
-        response = await axios.get(VITE_GALLERY_ENDPOINT + '/gallery', await buildRequestConfigWithAuthorization(axiosRequestConfig));
-    } catch (error: unknown) {
-        messages = handleError(error);
-    }
-
-    return {
-        success: !!response,
-        data: (response && response.data) || new Array<IFolderDetails>(),
-        messages,
-    };
-};
-
-const getFileDetailsAsync = async (fileId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<IFileDetails>> => {
-    let response = null, messages = new Array<string>();
-    try {
-        response = await axios.get(VITE_GALLERY_ENDPOINT + '/gallery/file/' + fileId, {
-            ...axiosRequestConfig,
+        const response = await postGallery({
+            body: {
+                folderDisplayName: folderDisplayName || undefined,
+                files: Array.from(files),
+            },
+            ...options,
         });
+
+        return {
+            success: true,
+            data: response.data?.toString() || '',
+            messages,
+        };
     } catch (error: unknown) {
         messages = handleError(error);
+        return {
+            success: false,
+            data: '',
+            messages,
+        };
     }
-
-    return {
-        success: !!response,
-        data: (response && response.data) || null,
-        messages,
-    };
 };
 
-const getFolderDetailsAsync = async (folderId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<IFolderDetails>> => {
-    let response = null, messages = new Array<string>();
+const deleteFileAsync = async (fileId: string): Promise<IApiResponse<boolean>> => {
+    let messages = ['Delete completed.'];
     try {
-        response = await axios.get(VITE_GALLERY_ENDPOINT + '/gallery/folder/' + folderId, { ...axiosRequestConfig });
+        await deleteGalleryFileById({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            path: { id: fileId as any },
+        });
+
+        return {
+            success: true,
+            data: true,
+            messages,
+        };
     } catch (error: unknown) {
         messages = handleError(error);
+        return {
+            success: false,
+            data: false,
+            messages,
+        };
     }
+};
 
-    return {
-        success: !!response,
-        data: (response && response.data) || null,
-        messages,
-    };
+const deleteFolderAsync = async (folderId: string): Promise<IApiResponse<boolean>> => {
+    let messages = ['Delete completed.'];
+    try {
+        await deleteGalleryFolderById({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            path: { id: folderId as any },
+        });
+
+        return {
+            success: true,
+            data: true,
+            messages,
+        };
+    } catch (error: unknown) {
+        messages = handleError(error);
+        return {
+            success: false,
+            data: false,
+            messages,
+        };
+    }
+};
+
+const getFoldersAsync = async (): Promise<IApiResponse<IFolderDetails[]>> => {
+    let messages = new Array<string>();
+    try {
+        const response = await getGallery();
+        const folders = (response.data as FolderDetailsReadModel[] || []).map(mapFolderDetails);
+
+        return {
+            success: true,
+            data: folders,
+            messages,
+        };
+    } catch (error: unknown) {
+        messages = handleError(error);
+        return {
+            success: false,
+            data: [],
+            messages,
+        };
+    }
+};
+
+const getFileDetailsAsync = async (fileId: string): Promise<IApiResponse<IFileDetails>> => {
+    let messages = new Array<string>();
+    try {
+        const response = await getGalleryFileById({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            path: { id: fileId as any },
+        });
+        const file = mapFileDetails(response.data as FileDetailsReadModel);
+
+        return {
+            success: true,
+            data: file,
+            messages,
+        };
+    } catch (error: unknown) {
+        messages = handleError(error);
+        return {
+            success: false,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data: null as any,
+            messages,
+        };
+    }
+};
+
+const getFolderDetailsAsync = async (folderId: string): Promise<IApiResponse<IFolderDetails>> => {
+    let messages = new Array<string>();
+    try {
+        const response = await getGalleryFolderById({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            path: { id: folderId as any },
+        });
+        const folder = mapFolderDetails(response.data as FolderDetailsReadModel);
+
+        return {
+            success: true,
+            data: folder,
+            messages,
+        };
+    } catch (error: unknown) {
+        messages = handleError(error);
+        return {
+            success: false,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data: null as any,
+            messages,
+        };
+    }
 };
 
 function handleError(error: unknown): string[] {
-    const axiosError = error as AxiosError;
-    switch (axiosError?.response?.status) {
-        case 401:
-            return ['Unauthorized. You need to sign in first.', JSON.stringify(axiosError.response.data)];
-        case 403:
-            return ['Forbidden. You do not have access to this app, please ask site\'s admin for his approval.', JSON.stringify(axiosError.response.data)];
+    if (error && typeof error === 'object' && 'status' in error) {
+        const status = (error as { status?: number }).status;
+        switch (status) {
+            case 401:
+                return ['Unauthorized. You need to sign in first.', JSON.stringify(error)];
+            case 403:
+                return ['Forbidden. You do not have access to this app, please ask site\'s admin for his approval.', JSON.stringify(error)];
+        }
     }
 
     console.error(error);

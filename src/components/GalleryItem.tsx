@@ -34,7 +34,7 @@ const ItemPreview = ({ fileType, downloadUri, alt = '' }: { fileType: FileType, 
 
         case 'VIDEO':
             return <video
-                src={`${downloadUri}#t=0.1`}
+                src={downloadUri}
                 controls
                 preload="metadata"
             />;

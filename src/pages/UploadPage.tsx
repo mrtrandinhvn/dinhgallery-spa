@@ -47,10 +47,11 @@ export default function UploadPage() {
         }
 
         const result = await uploadAsync(files, folderName, {
-            onUploadProgress: function ({ lengthComputable, loaded, total }) {
+            onUploadProgress: function (progressEvent) {
                 // Do whatever you want with the native progress event
+                const { loaded, total } = progressEvent;
                 setMessages([...messages, 'uploading...']);
-                if (lengthComputable && total) {
+                if (total) {
                     const mess = [`uploading... ${Number(loaded * 100 / total).toFixed(2)}%`];
                     if (loaded === total) {
                         mess.push('Server is saving your media.');

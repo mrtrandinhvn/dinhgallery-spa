@@ -7,11 +7,11 @@
     "@azure/msal-react": "^3.0.23",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
+    "@hey-api/client-axios": "^0.9.1",
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.6",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "axios": "^1.13.2",
     "json2mq": "^0.2.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
@@ -21,7 +21,8 @@
   "scripts": {
     "start": "vite",
     "build": "tsc -b && vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "generate-api": "openapi-ts"
   },
   "browserslist": {
     "production": [
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@hey-api/openapi-ts": "0.89.0",
     "@types/json2mq": "^0.2.2",
     "@types/node": "^25.0.3",
     "@vitejs/plugin-react": "^5.1.2",

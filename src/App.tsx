@@ -5,9 +5,10 @@ import NoSsr from '@mui/material/NoSsr';
 import MyAppBar from './components/MyAppBar';
 import { Outlet } from 'react-router-dom';
 import { green, purple } from '@mui/material/colors';
-import { msalInstance } from './authConfig';
+import { getAccessTokenAsync, msalInstance } from './authConfig';
 import { EventType, type AccountInfo } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
+import { client } from './client/client.gen';
 
 const theme = createTheme({
     palette: {
@@ -49,6 +50,12 @@ msalInstance.addEventCallback((event) => {
         const account = event.payload as AccountInfo;
         msalInstance.setActiveAccount(account);
     }
+});
+
+client.instance.interceptors.request.use(async (config) => {
+    config.headers.set('Authorization', `Bearer ${await getAccessTokenAsync()}`);
+    console.log(config.headers);
+    return config;
 });
 
 export default function App() {
