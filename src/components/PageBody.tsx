@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
-import React, { CSSProperties, ReactNode } from 'react';
+import Box from '@mui/material/Box';
+import type { CSSProperties, ReactNode } from 'react';
 
 interface IPageBody {
     children: ReactNode,

@@ -1,13 +1,19 @@
 import './GalleryFolder.css';
 
-import { Box, IconButton, ImageList, Typography, useMediaQuery, useTheme } from '@mui/material';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import ImageList from '@mui/material/ImageList';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import { default as GalleryItem } from './GalleryItem';
 import { useCallback, useEffect, useState } from 'react';
-import { deleteFileAsync, deleteFolderAsync, getFolderDetailsAsync, IFileDetails } from '../apis/gallery-apis';
+import { deleteFileAsync, deleteFolderAsync, getFolderDetailsAsync, type IFileDetails } from '../apis/gallery-apis';
 import LoadingDiv from './LoadingDiv';
 import NotFoundPage from '../pages/NotFoundPage';
 import Grid from '@mui/material/Grid';
-import { ExitToApp, DeleteForeverOutlined } from '@mui/icons-material';
+import ExitToApp from '@mui/icons-material/ExitToApp';
+import DeleteForeverOutlined from '@mui/icons-material/DeleteForeverOutlined';
 import CopyIconButton from './CopyIconButton';
 import ShareIconButton from './ShareIconButton';
 import { getAbsoluteUrl } from '../utils';

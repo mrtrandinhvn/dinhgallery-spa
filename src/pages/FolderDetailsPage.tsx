@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import GalleryFolder from '../components/GalleryFolder';
 import PageBody from '../components/PageBody';
@@ -10,7 +10,7 @@ const FolderDetailsPage = () => {
     }
 
     const navigate = useNavigate();
-    const deleteFolderHandle = useCallback((folderId: string) => {
+    const deleteFolderHandle = useCallback(() => {
         navigate('/');
     }, [navigate]);
 

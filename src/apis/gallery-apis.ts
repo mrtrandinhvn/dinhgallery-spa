@@ -1,6 +1,6 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import axios, { AxiosError, type AxiosRequestConfig } from 'axios';
 import { getAccessTokenAsync } from '../authConfig';
-const { REACT_APP_GALLERY_ENDPOINT } = process.env;
+const VITE_GALLERY_ENDPOINT = import.meta.env.VITE_GALLERY_ENDPOINT;
 
 interface IApiResponse<T> {
     success: boolean,
@@ -38,8 +38,8 @@ const uploadAsync = async (files: FileList, folderDisplayName: string | null, ax
             formData.append('files', file, file.name);
         }
 
-        response = await axios.post(`${REACT_APP_GALLERY_ENDPOINT}/gallery`, formData, await buildRequestConfigWithAuthorization(axiosRequestConfig));
-    } catch (error: any) {
+        response = await axios.post(`${VITE_GALLERY_ENDPOINT}/gallery`, formData, await buildRequestConfigWithAuthorization(axiosRequestConfig));
+    } catch (error: unknown) {
         messages = handleError(error);
     }
 
@@ -53,8 +53,8 @@ const uploadAsync = async (files: FileList, folderDisplayName: string | null, ax
 const deleteFileAsync = async (fileId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<boolean>> => {
     let response = null, messages = ['Upload completed.'];
     try {
-        response = await axios.delete(`${REACT_APP_GALLERY_ENDPOINT}/gallery/file/${fileId}`, await buildRequestConfigWithAuthorization(axiosRequestConfig));
-    } catch (error: any) {
+        response = await axios.delete(`${VITE_GALLERY_ENDPOINT}/gallery/file/${fileId}`, await buildRequestConfigWithAuthorization(axiosRequestConfig));
+    } catch (error: unknown) {
         messages = handleError(error);
     }
 
@@ -68,8 +68,8 @@ const deleteFileAsync = async (fileId: string, axiosRequestConfig?: AxiosRequest
 const deleteFolderAsync = async (folderId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<boolean>> => {
     let response = null, messages = ['Upload completed.'];
     try {
-        response = await axios.delete(`${REACT_APP_GALLERY_ENDPOINT}/gallery/folder/${folderId}`, await buildRequestConfigWithAuthorization(axiosRequestConfig));
-    } catch (error: any) {
+        response = await axios.delete(`${VITE_GALLERY_ENDPOINT}/gallery/folder/${folderId}`, await buildRequestConfigWithAuthorization(axiosRequestConfig));
+    } catch (error: unknown) {
         messages = handleError(error);
     }
 
@@ -83,8 +83,8 @@ const deleteFolderAsync = async (folderId: string, axiosRequestConfig?: AxiosReq
 const getFoldersAsync = async (axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<IFolderDetails[]>> => {
     let response = null, messages = new Array<string>();
     try {
-        response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery', await buildRequestConfigWithAuthorization(axiosRequestConfig));
-    } catch (error: any) {
+        response = await axios.get(VITE_GALLERY_ENDPOINT + '/gallery', await buildRequestConfigWithAuthorization(axiosRequestConfig));
+    } catch (error: unknown) {
         messages = handleError(error);
     }
 
@@ -98,10 +98,10 @@ const getFoldersAsync = async (axiosRequestConfig?: AxiosRequestConfig): Promise
 const getFileDetailsAsync = async (fileId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<IFileDetails>> => {
     let response = null, messages = new Array<string>();
     try {
-        response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery/file/' + fileId, {
+        response = await axios.get(VITE_GALLERY_ENDPOINT + '/gallery/file/' + fileId, {
             ...axiosRequestConfig,
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         messages = handleError(error);
     }
 
@@ -115,8 +115,8 @@ const getFileDetailsAsync = async (fileId: string, axiosRequestConfig?: AxiosReq
 const getFolderDetailsAsync = async (folderId: string, axiosRequestConfig?: AxiosRequestConfig): Promise<IApiResponse<IFolderDetails>> => {
     let response = null, messages = new Array<string>();
     try {
-        response = await axios.get(REACT_APP_GALLERY_ENDPOINT + '/gallery/folder/' + folderId, { ...axiosRequestConfig });
-    } catch (error: any) {
+        response = await axios.get(VITE_GALLERY_ENDPOINT + '/gallery/folder/' + folderId, { ...axiosRequestConfig });
+    } catch (error: unknown) {
         messages = handleError(error);
     }
 
@@ -127,7 +127,7 @@ const getFolderDetailsAsync = async (folderId: string, axiosRequestConfig?: Axio
     };
 };
 
-function handleError(error: any): string[] {
+function handleError(error: unknown): string[] {
     const axiosError = error as AxiosError;
     switch (axiosError?.response?.status) {
         case 401:
@@ -137,7 +137,7 @@ function handleError(error: any): string[] {
     }
 
     console.error(error);
-    return ['Some errors occurred with the api.', error.toString()];
+    return ['Some errors occurred with the api.', JSON.stringify(error)];
 }
 
 export {

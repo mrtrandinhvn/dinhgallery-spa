@@ -1,5 +1,6 @@
-import { Link, Typography } from '@mui/material';
-import React from 'react';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import type { MouseEvent } from 'react';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 import { useMsal } from '@azure/msal-react';
@@ -8,7 +9,7 @@ import { loginRequest } from '../authConfig';
 const NeedSignInMessage = () => {
     const { instance } = useMsal();
 
-    const handleLoginClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const handleLoginClick = (event: MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
         instance.loginRedirect(loginRequest);
     };

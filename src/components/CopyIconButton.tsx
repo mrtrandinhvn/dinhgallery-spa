@@ -1,5 +1,7 @@
-import { ContentCopy, Done } from '@mui/icons-material';
-import { IconButton, Zoom } from '@mui/material';
+import ContentCopy from '@mui/icons-material/ContentCopy';
+import Done from '@mui/icons-material/Done';
+import IconButton from '@mui/material/IconButton';
+import Zoom from '@mui/material/Zoom';
 import { memo, useCallback, useState } from 'react';
 
 const CopyIconButton = memo(function ({ url }: { url: string }) {

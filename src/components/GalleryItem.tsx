@@ -1,9 +1,18 @@
-import { Article, DeleteForeverOutlined, Download, ExitToApp } from '@mui/icons-material';
-import { Box, IconButton, ImageListItem, ImageListItemBar, Typography, useMediaQuery, useTheme } from '@mui/material';
-import React, { useCallback } from 'react';
+import Article from '@mui/icons-material/Article';
+import DeleteForeverOutlined from '@mui/icons-material/DeleteForeverOutlined';
+import Download from '@mui/icons-material/Download';
+import ExitToApp from '@mui/icons-material/ExitToApp';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import ImageListItem from '@mui/material/ImageListItem';
+import ImageListItemBar from '@mui/material/ImageListItemBar';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { IFileDetails } from '../apis/gallery-apis';
-import { FileType, getFileType } from '../constants/file-extensions';
+import type { IFileDetails } from '../apis/gallery-apis';
+import { type FileType, getFileType } from '../constants/file-extensions';
 import { getAbsoluteUrl } from '../utils';
 import CopyIconButton from './CopyIconButton';
 import ShareIconButton from './ShareIconButton';
@@ -17,7 +26,7 @@ const ItemPreview = ({ fileType, downloadUri, alt = '' }: { fileType: FileType, 
     switch (fileType) {
         case 'IMAGE':
             return <img
-                style={{minHeight: '200px'}}
+                style={{ minHeight: '200px' }}
                 src={downloadUri}
                 alt={alt}
                 loading='lazy'
@@ -25,7 +34,7 @@ const ItemPreview = ({ fileType, downloadUri, alt = '' }: { fileType: FileType, 
 
         case 'VIDEO':
             return <video
-                src={downloadUri}
+                src={`${downloadUri}#t=0.1`}
                 controls
                 preload="metadata"
             />;

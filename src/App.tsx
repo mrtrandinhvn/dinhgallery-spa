@@ -1,11 +1,12 @@
-import React from 'react';
 import Toolbar from '@mui/material/Toolbar';
-import { Box, createTheme, NoSsr, ThemeProvider } from '@mui/material';
-import MyAppbar from './components/MyAppBar';
+import Box from '@mui/material/Box';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import NoSsr from '@mui/material/NoSsr';
+import MyAppBar from './components/MyAppBar';
 import { Outlet } from 'react-router-dom';
 import { green, purple } from '@mui/material/colors';
 import { msalInstance } from './authConfig';
-import { EventType, AccountInfo } from '@azure/msal-browser';
+import { EventType, type AccountInfo } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
 
 const theme = createTheme({
@@ -56,7 +57,7 @@ export default function App() {
             <ThemeProvider theme={theme}>
                 <MsalProvider instance={msalInstance}>
                     <Box sx={{ display: 'flex', height: '100vh' }}>
-                        <MyAppbar />
+                        <MyAppBar />
                         <Box component="main" sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <Toolbar /> {/* this line is needed to offset the fixed appbar */}
                             <Outlet />

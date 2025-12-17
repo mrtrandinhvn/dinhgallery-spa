@@ -1,5 +1,4 @@
-import { Typography } from '@mui/material';
-import React from 'react';
+import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';

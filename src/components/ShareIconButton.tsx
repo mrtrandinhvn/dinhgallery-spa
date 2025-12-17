@@ -1,5 +1,5 @@
-import { Share } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import Share from '@mui/icons-material/Share';
+import IconButton from '@mui/material/IconButton';
 import { memo } from 'react';
 import { mobileShareAsync } from '../utils';
 

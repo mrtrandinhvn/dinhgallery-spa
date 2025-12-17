@@ -1,11 +1,11 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { CssBaseline } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
 
 import NotFoundPage from './pages/NotFoundPage';
 import GalleryPage from './pages/GalleryPage';
@@ -45,10 +45,10 @@ const RoutedApp = <BrowserRouter>
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
     <>
-        <React.StrictMode>
+        <StrictMode>
             <CssBaseline />
             {RoutedApp}
-        </React.StrictMode>
+        </StrictMode>
     </>,
 );
 

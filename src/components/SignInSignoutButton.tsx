@@ -1,7 +1,8 @@
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
-import { Login, Logout } from '@mui/icons-material';
-import { Button, SxProps, Theme } from '@mui/material';
-import React from 'react';
+import Login from '@mui/icons-material/Login';
+import Logout from '@mui/icons-material/Logout';
+import Button from '@mui/material/Button';
+import type { SxProps, Theme } from '@mui/material';
 import { loginRequest } from '../authConfig';
 
 interface ISignInButtonProp {

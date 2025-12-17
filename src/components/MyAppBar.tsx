@@ -1,20 +1,38 @@
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
-import { AccountCircle, Collections, GitHub, Menu as MenuIcon, SvgIconComponent, Upload } from '@mui/icons-material';
-import { AppBar, Box, Button, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Collections from '@mui/icons-material/Collections';
+import GitHub from '@mui/icons-material/GitHub';
+import MenuIcon from '@mui/icons-material/Menu';
+import Upload from '@mui/icons-material/Upload';
+import type { SvgIconComponent } from '@mui/icons-material';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { type MouseEvent, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ListItemLink from './ListItemLink';
 import SignInSignoutButton from './SignInSignoutButton';
 import WelcomeName from './WelcomeName';
 import packageJson from '../../package.json';
 
-const { REACT_APP_REPOSITORY_URL = '#' } = process.env;
+const VITE_REPOSITORY_URL = import.meta.env.VITE_REPOSITORY_URL || '#';
 
 const drawerWidth = 240;
 interface RouteConfig {
-    label: string,
-    path: string,
-    icon: SvgIconComponent,
+    label: string
+    path: string
+    icon: SvgIconComponent
 }
 
 const routes: RouteConfig[] = [
@@ -60,7 +78,7 @@ const DrawerBody = ({ handleDrawerToggle }: IDrawerBody) => {
                 <li>
                     <ListItemButton
                         component={'a'}
-                        href={REACT_APP_REPOSITORY_URL}
+                        href={VITE_REPOSITORY_URL}
                         target='_blank'
                         rel="noopener noreferrer">
                         <ListItemIcon><GitHub /></ListItemIcon>
@@ -72,11 +90,11 @@ const DrawerBody = ({ handleDrawerToggle }: IDrawerBody) => {
     );
 };
 
-const MyAppbar = () => {
+const MyAppBar = () => {
     const container = window !== undefined ? () => window.document.body : undefined;
     const { instance } = useMsal();
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const accountName = instance.getActiveAccount()?.name;
 
@@ -84,7 +102,7 @@ const MyAppbar = () => {
         setDrawerOpen(!drawerOpen);
     };
 
-    const handleOpenAccountMenu = (event: React.MouseEvent<HTMLElement>) => {
+    const handleOpenAccountMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -137,7 +155,7 @@ const MyAppbar = () => {
                             startIcon={<GitHub />}
                             component={'a'}
                             sx={{ color: '#fff' }}
-                            href={REACT_APP_REPOSITORY_URL}
+                            href={VITE_REPOSITORY_URL}
                             target={'_blank'}
                             rel="noopener noreferrer"
                         >
@@ -204,4 +222,4 @@ const MyAppbar = () => {
     );
 };
 
-export default MyAppbar;
+export default MyAppBar;

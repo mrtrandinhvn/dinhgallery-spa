@@ -3,9 +3,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import {
     Link as RouterLink,
-    LinkProps as RouterLinkProps,
+    type LinkProps as RouterLinkProps,
 } from 'react-router-dom';
-import { ListItemButton } from '@mui/material';
+import ListItemButton from '@mui/material/ListItemButton';
 
 interface ListItemLinkProps {
     icon?: React.ReactElement;

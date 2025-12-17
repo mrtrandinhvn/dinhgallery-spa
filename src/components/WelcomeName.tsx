@@ -1,13 +1,12 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 interface IWelcomeNameProps {
-    sx?: any,
     name?: string
 }
 
-const WelcomeName = ({ sx, name }: IWelcomeNameProps) => {
+const WelcomeName = ({ name }: IWelcomeNameProps) => {
     if (name) {
-        return <Typography sx={sx}>{name}</Typography>;
+        return <Typography>{name}</Typography>;
     } else {
         return null;
     }

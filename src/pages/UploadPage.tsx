@@ -1,7 +1,12 @@
-import { Clear, Upload } from '@mui/icons-material';
-import { Button, Grid, TextField, Typography, useMediaQuery } from '@mui/material';
+import Clear from '@mui/icons-material/Clear';
+import Upload from '@mui/icons-material/Upload';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import json2mq from 'json2mq';
-import React, { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, useCallback, useRef, useState } from 'react';
 import { uploadAsync } from '../apis/gallery-apis';
 import GalleryFolder from '../components/GalleryFolder';
 import PageBody from '../components/PageBody';
@@ -45,7 +50,7 @@ export default function UploadPage() {
             onUploadProgress: function ({ lengthComputable, loaded, total }) {
                 // Do whatever you want with the native progress event
                 setMessages([...messages, 'uploading...']);
-                if (lengthComputable) {
+                if (lengthComputable && total) {
                     const mess = [`uploading... ${Number(loaded * 100 / total).toFixed(2)}%`];
                     if (loaded === total) {
                         mess.push('Server is saving your media.');
@@ -67,7 +72,7 @@ export default function UploadPage() {
         resetForm();
     };
 
-    const deleteFolderHandle = useCallback((folderId: string) => {
+    const deleteFolderHandle = useCallback(() => {
         setSavedFolderId(null);
     }, []);
 
