@@ -7,15 +7,15 @@ import PageHeading from '../components/PageHeading';
 import SignInDialog from '../components/SignInDialog';
 
 const NeedSignInMessage = () => {
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const [signInDialogOpen, setSignInDialogOpen] = useState(false);
 
     const handleLoginClick = (event: MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
-        setDialogOpen(true);
+        setSignInDialogOpen(true);
     };
 
     const handleDialogClose = () => {
-        setDialogOpen(false);
+        setSignInDialogOpen(false);
     };
 
     return (
@@ -25,7 +25,7 @@ const NeedSignInMessage = () => {
                 <br />
                 If you already have an account, <Link href='#' onClick={handleLoginClick}>sign in</Link>.
             </Typography>
-            <SignInDialog open={dialogOpen} onClose={handleDialogClose} />
+            <SignInDialog open={signInDialogOpen} onClose={handleDialogClose} />
         </>
     );
 };
