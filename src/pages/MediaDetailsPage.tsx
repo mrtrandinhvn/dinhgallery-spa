@@ -15,6 +15,7 @@ import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 import { AuthenticatedTemplate } from '@azure/msal-react';
 import { mobileShareAsync } from '../utils';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 const mediaStyle: CSSProperties = {
     maxHeight: 'calc(100% - 48px)',
@@ -31,6 +32,7 @@ function MediaDetailsPage() {
     const [fileDetails, setFileDetails] = useState<IFileDetails | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [copied, setCopied] = useState(false);
+    const [confirmDeleteDiaglogOpen, setConfirmDeleteDiaglogOpen] = useState(false);
 
     useEffect(() => {
         const fetchDataAsync = async () => {
@@ -63,12 +65,19 @@ function MediaDetailsPage() {
         });
     }, [copied]);
 
-    const onDeleteClick = async () => {
-        if (window.confirm('Deleted media is lost forever. Are you sure you want to do this?')) {
-            await deleteFileAsync(id);
-            navigate('/');
-        }
-    };
+    const onDeleteClick = useCallback(() => {
+        setConfirmDeleteDiaglogOpen(true);
+    }, []);
+
+    const handleConfirmDelete = useCallback(async () => {
+        setConfirmDeleteDiaglogOpen(false);
+        await deleteFileAsync(id);
+        navigate('/');
+    }, [id, navigate]);
+
+    const handleCancelDelete = useCallback(() => {
+        setConfirmDeleteDiaglogOpen(false);
+    }, []);
 
     const onShareClick = useCallback(() => {
         mobileShareAsync({ url: window.location.href });
@@ -152,6 +161,16 @@ function MediaDetailsPage() {
                     </AuthenticatedTemplate>
                 </Box>
             </Box>
+            <ConfirmDialog
+                open={confirmDeleteDiaglogOpen}
+                title="Delete Media"
+                message="Deleted media is lost forever. Are you sure you want to do this?"
+                confirmText="Delete"
+                cancelText="Cancel"
+                confirmColor="error"
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+            />
         </PageBody>
     );
 }

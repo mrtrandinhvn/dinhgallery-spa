@@ -21,6 +21,7 @@ import ShareIconButton from './ShareIconButton';
 import { getAbsoluteUrl } from '../utils';
 import { Link } from 'react-router-dom';
 import { AuthenticatedTemplate } from '@azure/msal-react';
+import ConfirmDialog from './ConfirmDialog';
 
 interface IProps {
     folderId: string,
@@ -42,6 +43,7 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
     const [files, setFiles] = useState(new Array<IFileDetails>());
     const [uploadProgress, setUploadProgress] = useState<number>(0);
     const [isUploading, setIsUploading] = useState(false);
+    const [confirmDeleteDiaglogOpen, setConfirmDeleteDiaglogOpen] = useState(false);
 
     const uploadFilesInputRef = useRef<HTMLInputElement>(null);
 
@@ -76,16 +78,23 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
         })();
     }, [folderId]);
 
-    const localOnDeleteClick = useCallback(async () => {
-        if (window.confirm('Deleted media is lost forever. Are you sure you want to do this?')) {
-            setIsLoading(true);
-            const { data: isSuccess } = await deleteFolderAsync(folderId);
-            setIsLoading(false);
-            if (isSuccess) {
-                deleteFolder(folderId);
-            }
+    const localOnDeleteClick = useCallback(() => {
+        setConfirmDeleteDiaglogOpen(true);
+    }, []);
+
+    const handleConfirmDelete = useCallback(async () => {
+        setConfirmDeleteDiaglogOpen(false);
+        setIsLoading(true);
+        const { data: isSuccess } = await deleteFolderAsync(folderId);
+        setIsLoading(false);
+        if (isSuccess) {
+            deleteFolder(folderId);
         }
     }, [deleteFolder, folderId]);
+
+    const handleCancelDelete = useCallback(() => {
+        setConfirmDeleteDiaglogOpen(false);
+    }, []);
 
     const handleUploadClick = useCallback(() => {
         uploadFilesInputRef.current?.click();
@@ -214,6 +223,16 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
                         }
                     </ImageList>
             }
+            <ConfirmDialog
+                open={confirmDeleteDiaglogOpen}
+                title="Delete Folder"
+                message="Deleted media is lost forever. Are you sure you want to do this?"
+                confirmText="Delete"
+                cancelText="Cancel"
+                confirmColor="error"
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+            />
         </Box >
     );
 }

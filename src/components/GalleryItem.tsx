@@ -9,13 +9,14 @@ import ImageListItemBar from '@mui/material/ImageListItemBar';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { IFileDetails } from '../apis/gallery-apis';
 import { type FileType, getFileType } from '../constants/file-extensions';
 import { getAbsoluteUrl } from '../utils';
 import CopyIconButton from './CopyIconButton';
 import ShareIconButton from './ShareIconButton';
+import ConfirmDialog from './ConfirmDialog';
 
 interface IProps {
     details: IFileDetails,
@@ -62,6 +63,7 @@ function getDetailsPage(fileType: FileType, details: IFileDetails) {
 export default function GalleryItem({ details, deleteItem }: IProps) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [confirmDeleteDiaglogOpen, setConfirmDeleteDiaglogOpen] = useState(false);
 
     const fileName: string | undefined = details.downloadUri;
     if (!fileName) {
@@ -73,10 +75,17 @@ export default function GalleryItem({ details, deleteItem }: IProps) {
     const detailsPageAbsoluteUrl = getAbsoluteUrl(detailsPage);
 
     const localOnDeleteClick = useCallback(() => {
-        if (window.confirm('Deleted media is lost forever. Are you sure you want to do this?')) {
-            deleteItem(details.id);
-        }
+        setConfirmDeleteDiaglogOpen(true);
+    }, []);
+
+    const handleConfirmDelete = useCallback(() => {
+        setConfirmDeleteDiaglogOpen(false);
+        deleteItem(details.id);
     }, [deleteItem, details.id]);
+
+    const handleCancelDelete = useCallback(() => {
+        setConfirmDeleteDiaglogOpen(false);
+    }, []);
 
     return (
         <ImageListItem
@@ -127,6 +136,16 @@ export default function GalleryItem({ details, deleteItem }: IProps) {
                     </Box>
                 }
                 position={isMobile ? 'below' : 'top'}
+            />
+            <ConfirmDialog
+                open={confirmDeleteDiaglogOpen}
+                title="Delete Media"
+                message="Deleted media is lost forever. Are you sure you want to do this?"
+                confirmText="Delete"
+                cancelText="Cancel"
+                confirmColor="error"
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
             />
         </ImageListItem>
     );
