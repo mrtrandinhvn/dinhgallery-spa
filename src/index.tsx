@@ -19,8 +19,6 @@ import { configApiClient } from './apis/gallery-apis';
 
 configApiClient();
 
-initializeAuth();
-
 const RoutedApp = <BrowserRouter>
     <Routes>
         <Route path="/" element={<App />}>
@@ -49,14 +47,18 @@ const RoutedApp = <BrowserRouter>
 </BrowserRouter>;
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-root.render(
-    <>
-        <StrictMode>
-            <CssBaseline />
-            {RoutedApp}
-        </StrictMode>
-    </>,
-);
+
+// Initialize MSAL before rendering the app
+initializeAuth().then(() => {
+    root.render(
+        <>
+            <StrictMode>
+                <CssBaseline />
+                {RoutedApp}
+            </StrictMode>
+        </>,
+    );
+});
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
