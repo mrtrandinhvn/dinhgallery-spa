@@ -7,6 +7,9 @@ const SESSION_EXPIRY_KEY = 'msal_session_expiry';
 // Session timeout: 8 hours (in milliseconds)
 const SESSION_TIMEOUT = 8 * 60 * 60 * 1000;
 
+// Remember-me session timeout: 14 days (in milliseconds)
+const REMEMBER_ME_TIMEOUT = 14 * 24 * 60 * 60 * 1000;
+
 export const msalConfig = {
     auth: {
         authority: 'https://login.microsoftonline.com/5586e39d-7f28-4e20-a8a3-aeff5c78d4e1', // This is a URL (e.g. https://login.microsoftonline.com/{your tenant ID})
@@ -36,8 +39,9 @@ export const setRememberMe = (remember: boolean) => {
     try {
         if (remember) {
             localStorage.setItem(REMEMBER_ME_KEY, 'true');
-            // Set session expiry to null when "remember me" is checked (no timeout)
-            localStorage.removeItem(SESSION_EXPIRY_KEY);
+            // Set session expiry longer when "remember me" is checked
+            const expiryTime = Date.now() + REMEMBER_ME_TIMEOUT;
+            localStorage.setItem(SESSION_EXPIRY_KEY, expiryTime.toString());
         } else {
             localStorage.setItem(REMEMBER_ME_KEY, 'false');
             // Set session expiry time
@@ -62,7 +66,13 @@ const isSessionExpired = (): boolean => {
     try {
         const expiryTime = localStorage.getItem(SESSION_EXPIRY_KEY);
         if (!expiryTime) {
-            // No expiry set means "remember me" is enabled
+            // Legacy users from before the update won't have an expiry set
+            // Sign them out so they re-authenticate with the new 14-day timeout
+            const hasRememberMe = localStorage.getItem(REMEMBER_ME_KEY);
+            if (hasRememberMe) {
+                console.log('Legacy remember-me session detected, requiring re-authentication');
+                return true;
+            }
             return false;
         }
         return Date.now() > parseInt(expiryTime, 10);
@@ -170,14 +180,11 @@ export const initializeAuth = async () => {
 
             // Update session expiry based on remember-me preference
             const rememberMe = getRememberMe();
-            if (!rememberMe) {
-                // Set new session expiry
-                const expiryTime = Date.now() + SESSION_TIMEOUT;
-                try {
-                    localStorage.setItem(SESSION_EXPIRY_KEY, expiryTime.toString());
-                } catch (error) {
-                    console.error('Failed to set session expiry:', error);
-                }
+            const expiryTime = Date.now() + (rememberMe ? REMEMBER_ME_TIMEOUT : SESSION_TIMEOUT);
+            try {
+                localStorage.setItem(SESSION_EXPIRY_KEY, expiryTime.toString());
+            } catch (error) {
+                console.error('Failed to set session expiry:', error);
             }
         }
     });
