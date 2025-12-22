@@ -59,7 +59,7 @@ const SignInDialog = ({ open, onClose }: SignInDialogProps) => {
 
                 <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1, ml: 4 }}>
                     {rememberMe
-                        ? "You'll stay signed in until you sign out."
+                        ? "You'll stay signed in for an extended period."
                         : "You'll be signed out after 8 hours of inactivity."}
                 </Typography>
 
