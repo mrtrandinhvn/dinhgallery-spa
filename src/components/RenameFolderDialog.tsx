@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, KeyboardEvent } from 'react';
+import { useState, useCallback, useEffect, type KeyboardEvent } from 'react';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
