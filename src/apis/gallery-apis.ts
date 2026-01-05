@@ -1,4 +1,4 @@
-import { getAccessTokenAsync } from '../authConfig';
+import { getAccessTokenAsync, msalInstance } from '../authConfig';
 import { client as apiClient } from '../client/client.gen';
 import {
     deleteGalleryFileById,
@@ -255,7 +255,12 @@ export const configApiClient = () => {
     // Set the api client base URL from environment variable
     apiClient.setConfig({ baseURL: import.meta.env.VITE_GALLERY_ENDPOINT });
     apiClient.instance.interceptors.request.use(async (config) => {
-        config.headers.set('Authorization', `Bearer ${await getAccessTokenAsync()}`);
+        // Only add Authorization header if user is authenticated
+        const activeAccount = msalInstance.getActiveAccount();
+        if (activeAccount) {
+            config.headers.set('Authorization', `Bearer ${await getAccessTokenAsync()}`);
+        }
+
         return config;
     });
 };
