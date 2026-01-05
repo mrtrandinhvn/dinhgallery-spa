@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteGalleryFileByIdData, DeleteGalleryFileByIdResponses, DeleteGalleryFolderByIdData, DeleteGalleryFolderByIdResponses, GetGalleryData, GetGalleryFileByIdData, GetGalleryFileByIdResponses, GetGalleryFolderByIdData, GetGalleryFolderByIdResponses, GetGalleryResponses, PostGalleryData, PostGalleryFolderByFolderIdFilesData, PostGalleryFolderByFolderIdFilesResponses, PostGalleryResponses } from './types.gen';
+import type { DeleteGalleryFileByIdData, DeleteGalleryFileByIdResponses, DeleteGalleryFolderByIdData, DeleteGalleryFolderByIdResponses, GetGalleryData, GetGalleryFileByIdData, GetGalleryFileByIdResponses, GetGalleryFolderByIdData, GetGalleryFolderByIdResponses, GetGalleryResponses, GetVersionData, GetVersionResponses, PatchGalleryFolderByIdDisplayNameData, PatchGalleryFolderByIdDisplayNameResponses, PostGalleryData, PostGalleryFolderByFolderIdFilesData, PostGalleryFolderByFolderIdFilesResponses, PostGalleryResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -17,6 +17,37 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      */
     meta?: Record<string, unknown>;
 };
+
+export const postGalleryFolderByFolderIdFiles = <ThrowOnError extends boolean = false>(options: Options<PostGalleryFolderByFolderIdFilesData, ThrowOnError>) => (options.client ?? client).post<PostGalleryFolderByFolderIdFilesResponses, unknown, ThrowOnError>({
+    ...formDataBodySerializer,
+    responseType: 'json',
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/gallery/folder/{folderId}/files',
+    ...options,
+    headers: {
+        'Content-Type': null,
+        ...options.headers
+    }
+});
+
+export const getGallery = <ThrowOnError extends boolean = false>(options?: Options<GetGalleryData, ThrowOnError>) => (options?.client ?? client).get<GetGalleryResponses, unknown, ThrowOnError>({
+    responseType: 'json',
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/gallery',
+    ...options
+});
+
+export const postGallery = <ThrowOnError extends boolean = false>(options?: Options<PostGalleryData, ThrowOnError>) => (options?.client ?? client).post<PostGalleryResponses, unknown, ThrowOnError>({
+    ...formDataBodySerializer,
+    responseType: 'json',
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/gallery',
+    ...options,
+    headers: {
+        'Content-Type': null,
+        ...options?.headers
+    }
+});
 
 export const deleteGalleryFileById = <ThrowOnError extends boolean = false>(options: Options<DeleteGalleryFileByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteGalleryFileByIdResponses, unknown, ThrowOnError>({
     responseType: 'json',
@@ -46,33 +77,20 @@ export const getGalleryFolderById = <ThrowOnError extends boolean = false>(optio
     ...options
 });
 
-export const getGallery = <ThrowOnError extends boolean = false>(options?: Options<GetGalleryData, ThrowOnError>) => (options?.client ?? client).get<GetGalleryResponses, unknown, ThrowOnError>({
-    responseType: 'json',
+export const getVersion = <ThrowOnError extends boolean = false>(options?: Options<GetVersionData, ThrowOnError>) => (options?.client ?? client).get<GetVersionResponses, unknown, ThrowOnError>({
+    responseType: 'text',
     security: [{ name: 'Authorization', type: 'apiKey' }],
-    url: '/gallery',
+    url: '/version',
     ...options
 });
 
-export const postGallery = <ThrowOnError extends boolean = false>(options?: Options<PostGalleryData, ThrowOnError>) => (options?.client ?? client).post<PostGalleryResponses, unknown, ThrowOnError>({
-    ...formDataBodySerializer,
+export const patchGalleryFolderByIdDisplayName = <ThrowOnError extends boolean = false>(options: Options<PatchGalleryFolderByIdDisplayNameData, ThrowOnError>) => (options.client ?? client).patch<PatchGalleryFolderByIdDisplayNameResponses, unknown, ThrowOnError>({
     responseType: 'json',
     security: [{ name: 'Authorization', type: 'apiKey' }],
-    url: '/gallery',
+    url: '/gallery/folder/{id}/display-name',
     ...options,
     headers: {
-        'Content-Type': null,
-        ...options?.headers
-    }
-});
-
-export const postGalleryFolderByFolderIdFiles = <ThrowOnError extends boolean = false>(options: Options<PostGalleryFolderByFolderIdFilesData, ThrowOnError>) => (options.client ?? client).post<PostGalleryFolderByFolderIdFilesResponses, unknown, ThrowOnError>({
-    ...formDataBodySerializer,
-    responseType: 'json',
-    security: [{ name: 'Authorization', type: 'apiKey' }],
-    url: '/gallery/folder/{folderId}/files',
-    ...options,
-    headers: {
-        'Content-Type': null,
+        'Content-Type': 'application/json',
         ...options.headers
     }
 });

@@ -32,6 +32,10 @@ export type Ulid = {
     readonly time?: string;
 };
 
+export type UpdateFolderDisplayNameRequest = {
+    displayName: string;
+};
+
 export type FileDetailsReadModelWritable = {
     displayName?: string | null;
     downloadUri?: string | null;
@@ -48,6 +52,61 @@ export type FolderDetailsReadModelWritable = {
     createdAtUtc?: string;
     physicalName?: string | null;
 };
+
+export type PostGalleryFolderByFolderIdFilesData = {
+    body?: {
+        files?: Array<Blob | File>;
+    };
+    path: {
+        folderId: Ulid;
+    };
+    query?: never;
+    url: '/gallery/folder/{folderId}/files';
+};
+
+export type PostGalleryFolderByFolderIdFilesResponses = {
+    /**
+     * OK
+     */
+    200: Ulid;
+};
+
+export type PostGalleryFolderByFolderIdFilesResponse = PostGalleryFolderByFolderIdFilesResponses[keyof PostGalleryFolderByFolderIdFilesResponses];
+
+export type GetGalleryData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/gallery';
+};
+
+export type GetGalleryResponses = {
+    /**
+     * OK
+     */
+    200: Array<FolderDetailsReadModel>;
+};
+
+export type GetGalleryResponse = GetGalleryResponses[keyof GetGalleryResponses];
+
+export type PostGalleryData = {
+    body?: {
+        folderDisplayName?: string;
+        files?: Array<Blob | File>;
+    };
+    path?: never;
+    query?: never;
+    url: '/gallery';
+};
+
+export type PostGalleryResponses = {
+    /**
+     * OK
+     */
+    200: Ulid;
+};
+
+export type PostGalleryResponse = PostGalleryResponses[keyof PostGalleryResponses];
 
 export type DeleteGalleryFileByIdData = {
     body?: never;
@@ -121,57 +180,36 @@ export type GetGalleryFolderByIdResponses = {
 
 export type GetGalleryFolderByIdResponse = GetGalleryFolderByIdResponses[keyof GetGalleryFolderByIdResponses];
 
-export type GetGalleryData = {
+export type GetVersionData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/gallery';
+    url: '/version';
 };
 
-export type GetGalleryResponses = {
+export type GetVersionResponses = {
     /**
      * OK
      */
-    200: Array<FolderDetailsReadModel>;
+    200: string;
 };
 
-export type GetGalleryResponse = GetGalleryResponses[keyof GetGalleryResponses];
+export type GetVersionResponse = GetVersionResponses[keyof GetVersionResponses];
 
-export type PostGalleryData = {
-    body?: {
-        folderDisplayName?: string;
-        files?: Array<Blob | File>;
-    };
-    path?: never;
-    query?: never;
-    url: '/gallery';
-};
-
-export type PostGalleryResponses = {
-    /**
-     * OK
-     */
-    200: Ulid;
-};
-
-export type PostGalleryResponse = PostGalleryResponses[keyof PostGalleryResponses];
-
-export type PostGalleryFolderByFolderIdFilesData = {
-    body?: {
-        files?: Array<Blob | File>;
-    };
+export type PatchGalleryFolderByIdDisplayNameData = {
+    body?: UpdateFolderDisplayNameRequest;
     path: {
-        folderId: Ulid;
+        id: Ulid;
     };
     query?: never;
-    url: '/gallery/folder/{folderId}/files';
+    url: '/gallery/folder/{id}/display-name';
 };
 
-export type PostGalleryFolderByFolderIdFilesResponses = {
+export type PatchGalleryFolderByIdDisplayNameResponses = {
     /**
      * OK
      */
-    200: Ulid;
+    200: boolean;
 };
 
-export type PostGalleryFolderByFolderIdFilesResponse = PostGalleryFolderByFolderIdFilesResponses[keyof PostGalleryFolderByFolderIdFilesResponses];
+export type PatchGalleryFolderByIdDisplayNameResponse = PatchGalleryFolderByIdDisplayNameResponses[keyof PatchGalleryFolderByIdDisplayNameResponses];

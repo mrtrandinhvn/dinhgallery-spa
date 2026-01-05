@@ -6,6 +6,7 @@ import {
     getGallery,
     getGalleryFileById,
     getGalleryFolderById,
+    patchGalleryFolderByIdDisplayName,
     postGallery,
     postGalleryFolderByFolderIdFiles,
 } from '../client/sdk.gen';
@@ -155,6 +156,30 @@ const deleteFolderAsync = async (folderId: string): Promise<IApiResponse<boolean
     }
 };
 
+const updateFolderNameAsync = async (folderId: string, newDisplayName: string): Promise<IApiResponse<boolean>> => {
+    let messages = ['Folder renamed successfully.'];
+    try {
+        await patchGalleryFolderByIdDisplayName({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            path: { id: folderId as any },
+            body: { displayName: newDisplayName.trim() },
+        });
+
+        return {
+            success: true,
+            data: true,
+            messages,
+        };
+    } catch (error: unknown) {
+        messages = handleError(error);
+        return {
+            success: false,
+            data: false,
+            messages,
+        };
+    }
+};
+
 const getFoldersAsync = async (): Promise<IApiResponse<IFolderDetails[]>> => {
     let messages = new Array<string>();
     try {
@@ -249,6 +274,7 @@ export {
     getFoldersAsync,
     getFolderDetailsAsync,
     deleteFolderAsync,
+    updateFolderNameAsync,
 };
 
 export const configApiClient = () => {

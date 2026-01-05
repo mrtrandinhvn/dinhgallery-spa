@@ -9,19 +9,21 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { default as GalleryItem } from './GalleryItem';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { deleteFileAsync, deleteFolderAsync, getFolderDetailsAsync, uploadFilesToFolderAsync, type IFileDetails } from '../apis/gallery-apis';
+import { deleteFileAsync, deleteFolderAsync, getFolderDetailsAsync, updateFolderNameAsync, uploadFilesToFolderAsync, type IFileDetails } from '../apis/gallery-apis';
 import LoadingDiv from './LoadingDiv';
 import NotFoundPage from '../pages/NotFoundPage';
 import Grid from '@mui/material/Grid';
 import ExitToApp from '@mui/icons-material/ExitToApp';
 import DeleteForeverOutlined from '@mui/icons-material/DeleteForeverOutlined';
 import CloudUpload from '@mui/icons-material/CloudUpload';
+import Edit from '@mui/icons-material/Edit';
 import CopyIconButton from './CopyIconButton';
 import ShareIconButton from './ShareIconButton';
 import { getAbsoluteUrl } from '../utils';
 import { Link } from 'react-router-dom';
 import { AuthenticatedTemplate } from '@azure/msal-react';
 import ConfirmDialog from './ConfirmDialog';
+import RenameFolderDialog from './RenameFolderDialog';
 
 interface IProps {
     folderId: string,
@@ -44,6 +46,7 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
     const [uploadProgress, setUploadProgress] = useState<number>(0);
     const [isUploading, setIsUploading] = useState(false);
     const [confirmDeleteDiaglogOpen, setConfirmDeleteDiaglogOpen] = useState(false);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
 
     const uploadFilesInputRef = useRef<HTMLInputElement>(null);
 
@@ -139,6 +142,46 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
         }
     }, [folderId]);
 
+    const handleEditClick = useCallback(() => {
+        setEditDialogOpen(true);
+    }, []);
+
+    const handleConfirmEdit = useCallback(async (newName: string) => {
+        setEditDialogOpen(false);
+        setIsLoading(true);
+
+        const { success } = await updateFolderNameAsync(folderId, newName);
+
+        if (success) {
+            // Refresh folder details to get updated name
+            const { data } = await getFolderDetailsAsync(folderId);
+            if (data) {
+                setFolderDetails({
+                    ...data,
+                    createdAtUtc: new Date(data.createdAtUtc),
+                });
+                setFiles(data.files);
+            }
+        }
+
+        setIsLoading(false);
+    }, [folderId]);
+
+    const handleCancelEdit = useCallback(() => {
+        setEditDialogOpen(false);
+    }, []);
+
+    const validateFolderName = useCallback((value: string): string | null => {
+        const trimmed = value.trim();
+        if (!trimmed) {
+            return 'Folder name cannot be empty';
+        }
+        if (trimmed.length > 250) {
+            return 'Folder name is too long (max 250 characters)';
+        }
+        return null;
+    }, []);
+
     if (!isLoading && !folderDetails) {
         return <NotFoundPage />;
     }
@@ -151,9 +194,22 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
             {folderDetails &&
                 <Grid container spacing={0} marginBottom={2}>
                     <Grid size={{ xs: 12, sm: 8 }}>
-                        <Typography variant='h5'>
-                            {folderDetails.displayName}
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography variant='h5'>
+                                {folderDetails.displayName}
+                            </Typography>
+                            <AuthenticatedTemplate>
+                                <IconButton
+                                    onClick={handleEditClick}
+                                    color="primary"
+                                    size="small"
+                                    title="Edit folder name"
+                                    aria-label="Edit folder name"
+                                >
+                                    <Edit fontSize="small" />
+                                </IconButton>
+                            </AuthenticatedTemplate>
+                        </Box>
                         <Typography variant='subtitle1'>
                             Uploaded at: {folderDetails.createdAtUtc?.toLocaleString('en-GB')}
                         </Typography>
@@ -232,6 +288,19 @@ function GalleryFolder({ folderId, variant = 'standard', deleteFolder }: IProps)
                 confirmColor="error"
                 onConfirm={handleConfirmDelete}
                 onCancel={handleCancelDelete}
+            />
+            <RenameFolderDialog
+                open={editDialogOpen}
+                title="Rename Folder"
+                message="Enter a new name for this folder"
+                label="Folder name"
+                initialValue={folderDetails?.displayName || ''}
+                confirmText="Rename"
+                cancelText="Cancel"
+                maxLength={250}
+                onConfirm={handleConfirmEdit}
+                onCancel={handleCancelEdit}
+                validateInput={validateFolderName}
             />
         </Box >
     );
