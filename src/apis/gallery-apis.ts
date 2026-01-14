@@ -10,7 +10,7 @@ import {
     postGallery,
     postGalleryFolderByFolderIdFiles,
 } from '../client/sdk.gen';
-import type { FileDetailsReadModel, FolderDetailsReadModel } from '../client/types.gen';
+import type { FileDetailsReadModel, FolderDetailsReadModel, FolderDetailsReadModelPaginatedResult } from '../client/types.gen';
 import type { AxiosProgressEvent } from 'axios';
 
 interface IApiResponse<T> {
@@ -33,6 +33,16 @@ export interface IFolderDetails {
     id: string,
 }
 
+export interface IPaginatedFolders {
+    items: Array<IFolderDetails>,
+    totalCount: number,
+    pageNumber: number,
+    pageSize: number,
+    totalPages: number,
+    hasPreviousPage: boolean,
+    hasNextPage: boolean,
+}
+
 function mapFileDetails(file: FileDetailsReadModel): IFileDetails {
     return {
         id: file.id?.toString() || '',
@@ -48,6 +58,18 @@ function mapFolderDetails(folder: FolderDetailsReadModel): IFolderDetails {
         displayName: folder.displayName || '',
         createdAtUtc: folder.createdAtUtc || '',
         files: (folder.files || []).map(mapFileDetails),
+    };
+}
+
+function mapPaginatedFolders(paginated: FolderDetailsReadModelPaginatedResult): IPaginatedFolders {
+    return {
+        items: (paginated.items || []).map(mapFolderDetails),
+        totalCount: paginated.totalCount,
+        pageNumber: paginated.pageNumber,
+        pageSize: paginated.pageSize,
+        totalPages: paginated.totalPages ?? 0,
+        hasPreviousPage: paginated.hasPreviousPage ?? false,
+        hasNextPage: paginated.hasNextPage ?? false,
     };
 }
 
@@ -180,22 +202,32 @@ const updateFolderNameAsync = async (folderId: string, newDisplayName: string): 
     }
 };
 
-const getFoldersAsync = async (): Promise<IApiResponse<IFolderDetails[]>> => {
+const getFoldersAsync = async (pageNumber?: number, pageSize?: number): Promise<IApiResponse<IPaginatedFolders>> => {
     let messages = new Array<string>();
     try {
-        const response = await getGallery();
-        const folders = (response.data as FolderDetailsReadModel[] || []).map(mapFolderDetails);
+        const response = await getGallery({
+            query: { pageNumber, pageSize },
+        });
+        const paginatedFolders = mapPaginatedFolders(response.data as FolderDetailsReadModelPaginatedResult);
 
         return {
             success: true,
-            data: folders,
+            data: paginatedFolders,
             messages,
         };
     } catch (error: unknown) {
         messages = handleError(error);
         return {
             success: false,
-            data: [],
+            data: {
+                items: [],
+                totalCount: 0,
+                pageNumber: pageNumber ?? 1,
+                pageSize: pageSize ?? 10,
+                totalPages: 0,
+                hasPreviousPage: false,
+                hasNextPage: false,
+            },
             messages,
         };
     }

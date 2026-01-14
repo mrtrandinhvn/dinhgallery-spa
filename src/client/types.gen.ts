@@ -5,26 +5,36 @@ export type ClientOptions = {
 };
 
 export type FileDetailsReadModel = {
+    id: Ulid;
+    folderId: Ulid;
+    displayName: string | null;
+    downloadUri?: string | null;
+    createdAtUtc: string;
+};
+
+export type FileDetailsResponse = {
     id?: Ulid;
-    folderId?: Ulid;
     displayName?: string | null;
     downloadUri?: string | null;
     createdAtUtc?: string;
 };
 
-export type FileDetailsResponse = {
-    readonly createdAtUtc?: string;
-    readonly displayName?: string | null;
-    readonly downloadUri?: string | null;
-    id?: Ulid;
+export type FolderDetailsReadModel = {
+    id: Ulid;
+    displayName: string | null;
+    physicalName: string | null;
+    createdAtUtc: string;
+    files?: Array<FileDetailsReadModel> | null;
 };
 
-export type FolderDetailsReadModel = {
-    displayName?: string | null;
-    files?: Array<FileDetailsReadModel> | null;
-    createdAtUtc?: string;
-    id?: Ulid;
-    physicalName?: string | null;
+export type FolderDetailsReadModelPaginatedResult = {
+    items: Array<FolderDetailsReadModel> | null;
+    totalCount: number;
+    pageNumber: number;
+    pageSize: number;
+    readonly totalPages?: number;
+    readonly hasPreviousPage?: boolean;
+    readonly hasNextPage?: boolean;
 };
 
 export type Ulid = {
@@ -37,20 +47,29 @@ export type UpdateFolderDisplayNameRequest = {
 };
 
 export type FileDetailsReadModelWritable = {
+    displayName: string | null;
+    downloadUri?: string | null;
+    createdAtUtc: string;
+};
+
+export type FileDetailsResponseWritable = {
     displayName?: string | null;
     downloadUri?: string | null;
     createdAtUtc?: string;
 };
 
-export type FileDetailsResponseWritable = {
-    [key: string]: never;
+export type FolderDetailsReadModelWritable = {
+    displayName: string | null;
+    physicalName: string | null;
+    createdAtUtc: string;
+    files?: Array<FileDetailsReadModelWritable> | null;
 };
 
-export type FolderDetailsReadModelWritable = {
-    displayName?: string | null;
-    files?: Array<FileDetailsReadModelWritable> | null;
-    createdAtUtc?: string;
-    physicalName?: string | null;
+export type FolderDetailsReadModelPaginatedResultWritable = {
+    items: Array<FolderDetailsReadModelWritable> | null;
+    totalCount: number;
+    pageNumber: number;
+    pageSize: number;
 };
 
 export type PostGalleryFolderByFolderIdFilesData = {
@@ -76,7 +95,10 @@ export type PostGalleryFolderByFolderIdFilesResponse = PostGalleryFolderByFolder
 export type GetGalleryData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        pageNumber?: number;
+        pageSize?: number;
+    };
     url: '/gallery';
 };
 
@@ -84,7 +106,7 @@ export type GetGalleryResponses = {
     /**
      * OK
      */
-    200: Array<FolderDetailsReadModel>;
+    200: FolderDetailsReadModelPaginatedResult;
 };
 
 export type GetGalleryResponse = GetGalleryResponses[keyof GetGalleryResponses];
