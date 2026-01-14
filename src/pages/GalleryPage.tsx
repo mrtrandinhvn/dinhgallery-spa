@@ -9,7 +9,7 @@ import PageBody from '../components/PageBody';
 import PageHeading from '../components/PageHeading';
 
 const GalleryPage = () => {
-    const PAGE_SIZE = 1;
+    const PAGE_SIZE = 10;
 
     const [folderIds, setFolderIds] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
