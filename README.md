@@ -1,52 +1,93 @@
-# My Personal Gallery SPA repository
-This repository contains the frontend code for my personal file sharing system. The backend code of of the site is in this repository: https://github.com/mrtrandinhvn/dinhgallery-api.
+# DinhGallery SPA
 
-=========================
+A personal file gallery and sharing system built with React and TypeScript. This repository contains the frontend application that connects to the [DinhGallery API](https://github.com/mrtrandinhvn/dinhgallery-api).
 
-Legacy README
-# Getting Started with Create React App
-Nodejs v20.
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Features
 
-## Available Scripts
+- Gallery view with folder organization
+- Pagination with load more functionality
+- Media file viewing and management
+- File upload capabilities
+- Azure AD authentication
+- Folder management (create, rename, delete)
+- Share and copy file links
+- Responsive Material UI design
 
-In the project directory, you can run:
+## Tech Stack
 
-### `npm start`
+- **React** 19.2.3 with TypeScript
+- **Vite** - Build tool and dev server
+- **Material UI** v7 - UI component library
+- **Azure MSAL** - Authentication
+- **React Router** v6 - Client-side routing
+- **OpenAPI TypeScript** - Auto-generated API client
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Prerequisites
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Node.js v20 or higher
+- npm or yarn package manager
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Installation
 
-### `npm run build`
+```bash
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Development
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Start the development server:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+npm start
+```
 
-### `npm run eject`
+The app will open at [http://localhost:5173](http://localhost:5173) (Vite default port).
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Building
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Build the app for production:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+npm run build
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+The optimized build will be output to the `dist` folder.
 
-## Learn More
+### Preview Production Build
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Preview the production build locally:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+npm run serve
+```
+
+### API Client Generation
+
+Regenerate the API client from OpenAPI specification:
+
+```bash
+npm run generate-api
+```
+
+## Project Structure
+
+```
+src/
+├── apis/           # API integration layer
+├── client/         # Auto-generated OpenAPI client
+├── components/     # Reusable React components
+├── constants/      # Application constants
+├── pages/          # Page components
+├── utils.tsx       # Utility functions
+└── authConfig.ts   # Azure AD authentication config
+```
+
+## Configuration
+
+Authentication is configured through Azure MSAL. Update `src/authConfig.ts` with your Azure AD application settings.
+
+## Related Repositories
+
+- Backend API: [dinhgallery-api](https://github.com/mrtrandinhvn/dinhgallery-api)
