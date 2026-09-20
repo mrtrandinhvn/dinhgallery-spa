@@ -34,11 +34,13 @@ vi.mock('@mui/material/CircularProgress', () => ({
 }));
 
 vi.mock('@mui/material/TextField', () => ({
-    default: ({ label, onChange, value }: {
+    default: ({ label, onChange, onCompositionStart, onCompositionEnd, value }: {
         label: string,
         onChange: (event: ChangeEvent<HTMLInputElement>) => void,
+        onCompositionStart: () => void,
+        onCompositionEnd: () => void,
         value: string,
-    }) => <label>{label}<input aria-label={label} onChange={onChange} value={value} /></label>,
+    }) => <label>{label}<input aria-label={label} onChange={onChange} onCompositionStart={onCompositionStart} onCompositionEnd={onCompositionEnd} value={value} /></label>,
 }));
 
 const getFoldersAsyncMock = vi.mocked(getFoldersAsync);
@@ -122,5 +124,26 @@ describe('GalleryPage folder search', () => {
         expect(getFoldersAsyncMock).toHaveBeenCalledTimes(2);
         expect(getFoldersAsyncMock).toHaveBeenLastCalledWith(1, 10);
         expect(searchFoldersAsyncMock).not.toHaveBeenCalled();
+    });
+
+    it('does not search intermediate IME values and searches the completed Vietnamese text', async () => {
+        await renderGalleryPage();
+        const searchBox = screen.getByLabelText('Search folders');
+
+        fireEvent.compositionStart(searchBox);
+        fireEvent.change(searchBox, { target: { value: 'a' } });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(300);
+        });
+        expect(searchFoldersAsyncMock).not.toHaveBeenCalled();
+
+        fireEvent.change(searchBox, { target: { value: 'â' } });
+        fireEvent.compositionEnd(searchBox);
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(300);
+        });
+
+        expect(searchFoldersAsyncMock).toHaveBeenCalledTimes(1);
+        expect(searchFoldersAsyncMock).toHaveBeenCalledWith('â');
     });
 });

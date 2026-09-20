@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -19,6 +19,8 @@ const GalleryPage = () => {
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [searchText, setSearchText] = useState('');
     const [isSearching, setIsSearching] = useState(false);
+    const isComposingRef = useRef(false);
+    const [isComposing, setIsComposing] = useState(false);
 
     useEffect(() => {
         const fetchDataAsync = async () => {
@@ -34,6 +36,10 @@ const GalleryPage = () => {
     }, []);
 
     useEffect(() => {
+        if (isComposing || isComposingRef.current) {
+            return;
+        }
+
         const trimmedSearchText = searchText.trim();
         if (!trimmedSearchText) {
             return;
@@ -54,11 +60,11 @@ const GalleryPage = () => {
             isCurrentSearch = false;
             window.clearTimeout(timeoutId);
         };
-    }, [searchText]);
+    }, [isComposing, searchText]);
 
     const handleSearchTextChange = useCallback(async (value: string) => {
         setSearchText(value);
-        if (!value.trim()) {
+        if (!value.trim() && !isComposingRef.current) {
             setIsSearching(false);
             setIsLoading(true);
             const { data } = await getFoldersAsync(1, PAGE_SIZE);
@@ -67,6 +73,16 @@ const GalleryPage = () => {
             setPageNumber(1);
             setIsLoading(false);
         }
+    }, []);
+
+    const handleCompositionStart = useCallback(() => {
+        isComposingRef.current = true;
+        setIsComposing(true);
+    }, []);
+
+    const handleCompositionEnd = useCallback(() => {
+        isComposingRef.current = false;
+        setIsComposing(false);
     }, []);
 
     const deleteFolderHandle = useCallback((folderId: string) => {
@@ -95,6 +111,8 @@ const GalleryPage = () => {
                 label="Search folders"
                 margin="normal"
                 onChange={event => void handleSearchTextChange(event.target.value)}
+                onCompositionStart={handleCompositionStart}
+                onCompositionEnd={handleCompositionEnd}
                 placeholder="Type a folder name"
                 value={searchText}
             />
