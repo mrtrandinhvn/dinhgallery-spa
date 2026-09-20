@@ -6,6 +6,7 @@ import {
     getGallery,
     getGalleryFileById,
     getGalleryFolderById,
+    getGallerySearch,
     patchGalleryFolderByIdDisplayName,
     postGallery,
     postGalleryFolderByFolderIdFiles,
@@ -60,6 +61,19 @@ function mapFolderDetails(folder: FolderDetailsReadModel): IFolderDetails {
         files: (folder.files || []).map(mapFileDetails),
     };
 }
+
+const searchFoldersAsync = async (searchText: string): Promise<IApiResponse<IFolderDetails[]>> => {
+    try {
+        const response = await getGallerySearch({ query: { searchText } });
+        return {
+            success: true,
+            data: (response.data as FolderDetailsReadModel[]).map(mapFolderDetails),
+            messages: [],
+        };
+    } catch (error: unknown) {
+        return { success: false, data: [], messages: handleError(error) };
+    }
+};
 
 function mapPaginatedFolders(paginated: FolderDetailsReadModelPaginatedResult): IPaginatedFolders {
     return {
@@ -304,6 +318,7 @@ export {
     deleteFileAsync,
     getFileDetailsAsync,
     getFoldersAsync,
+    searchFoldersAsync,
     getFolderDetailsAsync,
     deleteFolderAsync,
     updateFolderNameAsync,

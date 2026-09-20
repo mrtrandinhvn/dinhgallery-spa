@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteGalleryFileByIdData, DeleteGalleryFileByIdResponses, DeleteGalleryFolderByIdData, DeleteGalleryFolderByIdResponses, GetGalleryData, GetGalleryFileByIdData, GetGalleryFileByIdResponses, GetGalleryFolderByIdData, GetGalleryFolderByIdResponses, GetGalleryResponses, GetVersionData, GetVersionResponses, PatchGalleryFolderByIdDisplayNameData, PatchGalleryFolderByIdDisplayNameResponses, PostGalleryData, PostGalleryFolderByFolderIdFilesData, PostGalleryFolderByFolderIdFilesResponses, PostGalleryResponses } from './types.gen';
+import type { DeleteGalleryFileByIdData, DeleteGalleryFileByIdResponses, DeleteGalleryFolderByIdData, DeleteGalleryFolderByIdResponses, GetGalleryData, GetGalleryFileByIdData, GetGalleryFileByIdResponses, GetGalleryFolderByIdData, GetGalleryFolderByIdResponses, GetGalleryResponses, GetGallerySearchData, GetGallerySearchResponses, GetVersionData, GetVersionResponses, PatchGalleryFolderByIdDisplayNameData, PatchGalleryFolderByIdDisplayNameResponses, PostGalleryData, PostGalleryFolderByFolderIdFilesData, PostGalleryFolderByFolderIdFilesResponses, PostGalleryResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -34,6 +34,13 @@ export const getGallery = <ThrowOnError extends boolean = false>(options?: Optio
     responseType: 'json',
     security: [{ name: 'Authorization', type: 'apiKey' }],
     url: '/gallery',
+    ...options
+});
+
+export const getGallerySearch = <ThrowOnError extends boolean = false>(options?: Options<GetGallerySearchData, ThrowOnError>) => (options?.client ?? client).get<GetGallerySearchResponses, unknown, ThrowOnError>({
+    responseType: 'json',
+    security: [{ name: 'Authorization', type: 'apiKey' }],
+    url: '/gallery/search',
     ...options
 });
 

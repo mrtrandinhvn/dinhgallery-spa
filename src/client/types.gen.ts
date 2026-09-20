@@ -24,6 +24,7 @@ export type FolderDetailsReadModel = {
     displayName: string | null;
     physicalName: string | null;
     createdAtUtc: string;
+    updatedAtUtc: string;
     files?: Array<FileDetailsReadModel> | null;
 };
 
@@ -62,6 +63,7 @@ export type FolderDetailsReadModelWritable = {
     displayName: string | null;
     physicalName: string | null;
     createdAtUtc: string;
+    updatedAtUtc: string;
     files?: Array<FileDetailsReadModelWritable> | null;
 };
 
@@ -108,6 +110,22 @@ export type GetGalleryResponses = {
      */
     200: FolderDetailsReadModelPaginatedResult;
 };
+
+export type GetGallerySearchData = {
+    body?: never;
+    path?: never;
+    query?: {
+        searchText?: string;
+    };
+    url: '/gallery/search';
+};
+
+export type GetGallerySearchResponses = {
+    /** OK */
+    200: Array<FolderDetailsReadModel>;
+};
+
+export type GetGallerySearchResponse = GetGallerySearchResponses[keyof GetGallerySearchResponses];
 
 export type GetGalleryResponse = GetGalleryResponses[keyof GetGalleryResponses];
 
