@@ -66,12 +66,10 @@ const GalleryPage = () => {
         setSearchText(value);
         if (!value.trim() && !isComposingRef.current) {
             setIsSearching(false);
-            setIsLoading(true);
             const { data } = await getFoldersAsync(1, PAGE_SIZE);
             setFolderIds(data.items.map(folder => folder.id));
             setHasNextPage(data.hasNextPage);
             setPageNumber(1);
-            setIsLoading(false);
         }
     }, []);
 

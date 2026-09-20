@@ -124,6 +124,7 @@ describe('GalleryPage folder search', () => {
         expect(getFoldersAsyncMock).toHaveBeenCalledTimes(2);
         expect(getFoldersAsyncMock).toHaveBeenLastCalledWith(1, 10);
         expect(searchFoldersAsyncMock).not.toHaveBeenCalled();
+        expect(document.body.contains(searchBox)).toBe(true);
     });
 
     it('does not search intermediate IME values and searches the completed Vietnamese text', async () => {
