@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -62,9 +63,13 @@ const GalleryPage = () => {
         };
     }, [isComposing, searchText]);
 
-    const handleSearchTextChange = useCallback(async (value: string) => {
+    const handleSearchTextChange = useCallback(async (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const value = event.target.value;
+        const nativeEvent = event.nativeEvent as InputEvent;
+        const isEventComposing = nativeEvent.isComposing || isComposingRef.current;
+
         setSearchText(value);
-        if (!value.trim() && !isComposingRef.current) {
+        if (!value.trim() && !isEventComposing) {
             setIsSearching(false);
             setIsLoading(true);
             const { data } = await getFoldersAsync(1, PAGE_SIZE);
@@ -110,7 +115,7 @@ const GalleryPage = () => {
                 fullWidth
                 label="Search folders"
                 margin="normal"
-                onChange={event => void handleSearchTextChange(event.target.value)}
+                onChange={event => void handleSearchTextChange(event)}
                 onCompositionStart={handleCompositionStart}
                 onCompositionEnd={handleCompositionEnd}
                 placeholder="Type a folder name"

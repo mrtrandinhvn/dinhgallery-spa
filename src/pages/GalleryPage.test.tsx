@@ -146,4 +146,20 @@ describe('GalleryPage folder search', () => {
         expect(searchFoldersAsyncMock).toHaveBeenCalledTimes(1);
         expect(searchFoldersAsyncMock).toHaveBeenCalledWith('â');
     });
+
+    it('does not reload the folder list when an IME change reports an empty intermediate value', async () => {
+        await renderGalleryPage();
+        const searchBox = screen.getByLabelText('Search folders');
+
+        fireEvent.compositionStart(searchBox);
+        fireEvent.change(searchBox, {
+            target: { value: 'a' },
+        });
+        fireEvent.change(searchBox, {
+            target: { value: '' },
+        });
+
+        expect(getFoldersAsyncMock).toHaveBeenCalledTimes(1);
+        expect(searchFoldersAsyncMock).not.toHaveBeenCalled();
+    });
 });
